@@ -1,0 +1,77 @@
+{
+  "$comment": "Methodology Wizard translations.",
+  "page": {
+    "title": "Methodology Wizard",
+    "subtitle": "Answer five questions and we'll recommend the best innovation framework for your problem — with a full score breakdown."
+  },
+  "wizard": {
+    "title": "Problem profile",
+    "subtitle": "Adjust the five dimensions to get a live ranking"
+  },
+  "results": {
+    "bestFitTitle": "Best-fit recommendation",
+    "bestFitSubtitle": "Based on your current problem profile",
+    "allRankings": "All frameworks, ranked"
+  },
+  "names": {
+    "triz": "TRIZ",
+    "sit": "Systematic Inventive Thinking (SIT)",
+    "jtbd": "Jobs to Be Done (JTBD)",
+    "six-hats": "Six Thinking Hats",
+    "design-thinking": "Design Thinking"
+  },
+  "oneLiners": {
+    "triz": "Theory of Inventive Problem Solving — 40 principles to resolve technical contradictions.",
+    "sit": "Five templates: Subtraction, Unification, Multiplication, Task Unification, Attribute Dependency.",
+    "jtbd": "Focus on the 'job' the customer hires a product to do — not on features.",
+    "six-hats": "One thinking mode per hat — facts, feelings, critique, optimism, creativity, control.",
+    "design-thinking": "Five stages: Empathize, Define, Ideate, Prototype, Test."
+  },
+  "axes": {
+    "novelty": {
+      "label": "Novelty",
+      "hint": "How much change from the status quo do you want?",
+      "options": {
+        "incremental": "Incremental",
+        "adjacent": "Adjacent",
+        "disruptive": "Disruptive"
+      }
+    },
+    "domainExperience": {
+      "label": "Team domain experience",
+      "hint": "How deep is the team's accumulated expertise here?",
+      "options": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "teamSize": {
+      "label": "Team size",
+      "hint": "How many people typically work on this kind of problem?",
+      "options": {
+        "solo": "Solo",
+        "small": "Small (3–8)",
+        "large": "Large (9+)"
+      }
+    },
+    "userInsight": {
+      "label": "User insight",
+      "hint": "How well do you understand the end beneficiary?",
+      "options": {
+        "vague": "Vague",
+        "partial": "Partial",
+        "deep": "Deep"
+      }
+    },
+    "technicalConstraints": {
+      "label": "Technical constraints",
+      "hint": "How many hard technical constraints apply?",
+      "options": {
+        "few": "Few",
+        "moderate": "Moderate",
+        "many": "Many"
+      }
+    }
+  }
+}
