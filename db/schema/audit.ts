@@ -79,3 +79,47 @@ export const auditLog = pgTable(
 
 export type AuditEvent = typeof auditLog.$inferSelect;
 export type NewAuditEvent = typeof auditLog.$inferInsert;
+
+/**
+ * Audit chain checkpoints — periodic, append-only snapshots of the head of
+ * the `audit_log` hash chain.
+ *
+ * A checkpoint records `(row_count, entry_hash_at_that_count)` — "after N
+ * rows, the chain head was H". As long as the N-th audit row still has
+ * `entry_hash = H` (and the chain verifies up to N), the prefix is provably
+ * unaltered — even against a full-DB compromise that could rewrite
+ * `audit_log`, because the attacker would also need to forge a matching
+ * checkpoint that was already mirrored off-box.
+ *
+ * In production every checkpoint row is also written to a WORM (write-once,
+ * read-many) object store with Object Lock — that immutable copy is the real
+ * anchor; this table is the convenient local index of it (`worm_ref`).
+ *
+ * INSERT-only by convention (same as `audit_log`).
+ *
+ * @see lib/audit/checkpoint.ts
+ * @see lib/audit/chain.ts
+ * @see docs/adr/0003-audit-hash-chain.md
+ */
+export const auditCheckpoints = pgTable(
+  "audit_checkpoints",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    /** Number of `audit_log` rows covered (text to dodge int32 limits). */
+    rowCount: text("row_count").notNull(),
+    /** `entry_hash` of the `rowCount`-th audit row (1-indexed, occurredAt ASC). */
+    entryHash: text("entry_hash").notNull(),
+    createdBy: uuid("created_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    /** URI/key of the WORM object that mirrors this row. Null in dev. */
+    wormRef: text("worm_ref"),
+  },
+  (t) => [index("audit_checkpoints_created_idx").on(t.createdAt)],
+);
+
+export type AuditCheckpoint = typeof auditCheckpoints.$inferSelect;
+export type NewAuditCheckpoint = typeof auditCheckpoints.$inferInsert;

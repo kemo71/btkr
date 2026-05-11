@@ -3,7 +3,9 @@ import { requireActor } from "@/lib/auth/current-actor";
 import { Badge, Card, CardBody, CardHeader, Field, Input, Select } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { AuditVerifyButton } from "@/components/admin/audit-verify-button";
+import { AuditCheckpointPanel } from "@/components/admin/audit-checkpoint-panel";
 import { listAudit } from "@/lib/audit/queries";
+import { latestCheckpoint } from "@/lib/audit/checkpoint";
 import type { Locale } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +56,7 @@ export default async function AuditExplorerPage({
 
   const { rows, total } = await listAudit(filter, page, PAGE_SIZE);
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const cp = await latestCheckpoint();
   const base = locale === "ar" ? "/admin/audit" : `/${locale}/admin/audit`;
   const buildHref = (next: number) => {
     const u = new URLSearchParams();
@@ -86,6 +89,40 @@ export default async function AuditExplorerPage({
               running: t("chain.running"),
               ok: t("chain.ok"),
               broken: t("chain.broken"),
+            }}
+          />
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader
+          title={t("checkpoint.title")}
+          subtitle={t("checkpoint.subtitle")}
+        />
+        <CardBody>
+          <AuditCheckpointPanel
+            latest={
+              cp
+                ? {
+                    rowCount: cp.rowCount,
+                    entryHash: cp.entryHash,
+                    takenAt: cp.createdAt
+                      .toISOString()
+                      .replace("T", " ")
+                      .slice(0, 16),
+                  }
+                : null
+            }
+            labels={{
+              none: t("checkpoint.none"),
+              lastTitle: t("checkpoint.lastTitle"),
+              coversRows: t("checkpoint.coversRows"),
+              take: t("checkpoint.take"),
+              taking: t("checkpoint.taking"),
+              verify: t("checkpoint.verify"),
+              verifying: t("checkpoint.verifying"),
+              ok: t("checkpoint.ok"),
+              failed: t("checkpoint.failed"),
             }}
           />
         </CardBody>

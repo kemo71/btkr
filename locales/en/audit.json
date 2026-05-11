@@ -12,6 +12,19 @@
     "ok": "Intact",
     "broken": "Broken at"
   },
+  "checkpoint": {
+    "title": "Chain checkpoints (WORM)",
+    "subtitle": "Periodic snapshot of the chain head. In production each checkpoint is mirrored to write-once storage.",
+    "none": "No checkpoint taken yet.",
+    "lastTitle": "Last checkpoint",
+    "coversRows": "covers {n} rows",
+    "take": "Take checkpoint",
+    "taking": "Taking…",
+    "verify": "Verify against checkpoint",
+    "verifying": "Verifying…",
+    "ok": "Chain matches the checkpoint",
+    "failed": "Verification failed"
+  },
   "filter": {
     "title": "Filter",
     "category": "Category",

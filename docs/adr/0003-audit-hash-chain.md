@@ -27,9 +27,16 @@ table.
 - `lib/audit/chain.ts#verifyChain()` re-derives the expected hashes for an
   ASC-ordered row set; the admin Audit Explorer exposes a one-click
   verify that itself writes an audit event.
-- **Phase 2**: publish the latest `entry_hash` to a WORM (write-once)
-  bucket on a schedule. A checkpoint in immutable storage proves the
-  prefix up to that point is unaltered even against a full-DB compromise.
+- **Checkpoints (implemented, Phase 2)**: `audit_checkpoints` records
+  periodic `(rowCount N, entryHash H)` snapshots of the chain head. The
+  Audit Explorer can take a checkpoint and verify the chain against the
+  latest one — the prefix up to N is provably unaltered iff the chain
+  verifies AND the N-th row still carries `H`. This closes the
+  *truncation* gap: deleting a suffix shrinks `rowCount` below a known
+  checkpoint, which `verifyAgainstCheckpoint()` flags. In production every
+  checkpoint row is also mirrored to a WORM (write-once) object store with
+  Object Lock (`audit_checkpoints.worm_ref` points at it) — that immutable
+  copy is the real anchor even against a full-DB compromise.
 
 ## Consequences
 
@@ -43,7 +50,8 @@ table.
 - The table lock serializes audit writes. Impact is bounded (held for one
   statement) and audit volume is low relative to app traffic; acceptable.
 - The chain alone doesn't stop *truncation* (deleting a suffix of rows) —
-  that's what the Phase 2 WORM checkpoint addresses.
+  the checkpoint mechanism (now implemented) does, by recording a known
+  `rowCount`; a shrunk log fails `verifyAgainstCheckpoint()`.
 - Re-ordering by clock skew: we order by `occurred_at` and reserve the
   timestamp before hashing, so the persisted row matches the hashed
   payload. Two rows with identical `occurred_at` would be ambiguous; in
