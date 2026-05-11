@@ -6,7 +6,15 @@ import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import type { Locale } from "@/i18n/routing";
 import { ByokCreateForm } from "@/components/admin/byok-create-form";
 import { ByokRevokeButton } from "@/components/admin/byok-revoke-button";
+import { ByokPendingActions } from "@/components/admin/byok-pending-actions";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
+
+const STATUS_TONE = {
+  pending: "warning",
+  active: "success",
+  rotated: "neutral",
+  revoked: "danger",
+} as const;
 
 // Always render per-request: depends on the current actor + DB state.
 export const dynamic = "force-dynamic";
@@ -35,6 +43,7 @@ export default async function ByokAdminPage({
   const keys = await listKeys();
   const canCreate = can(actor, "byok-key:create");
   const canRevoke = can(actor, "byok-key:revoke");
+  const canApprove = can(actor, "byok-key:rotate");
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-8 px-6 py-12">
@@ -86,21 +95,8 @@ export default async function ByokAdminPage({
                 >
                   <div className="flex min-w-0 flex-col">
                     <div className="flex items-center gap-2">
-                      <Badge
-                        tone={
-                          k.revokedAt
-                            ? "danger"
-                            : k.isActive
-                              ? "success"
-                              : "neutral"
-                        }
-                        dot
-                      >
-                        {k.revokedAt
-                          ? t("status.revoked")
-                          : k.isActive
-                            ? t("status.active")
-                            : t("status.rotated")}
+                      <Badge tone={STATUS_TONE[k.status]} dot>
+                        {t(`status.${k.status}`)}
                       </Badge>
                       <span className="font-medium text-neutral-900">
                         {k.label}
@@ -119,7 +115,17 @@ export default async function ByokAdminPage({
                       </span>
                     </div>
                   </div>
-                  {canRevoke && !k.revokedAt ? (
+                  {k.status === "pending" && canApprove ? (
+                    <ByokPendingActions
+                      id={k.id}
+                      ownedByMe={k.createdBy === actor.userId}
+                      labels={{
+                        approve: t("list.approve"),
+                        reject: t("list.reject"),
+                        ownGuard: t("list.ownGuard"),
+                      }}
+                    />
+                  ) : k.status === "active" && canRevoke ? (
                     <ByokRevokeButton id={k.id} label={t("list.revoke")} />
                   ) : null}
                 </li>

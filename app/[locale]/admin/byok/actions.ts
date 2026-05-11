@@ -5,7 +5,14 @@ import { z } from "zod";
 import { getCurrentActor } from "@/lib/auth/current-actor";
 import { assertPermission, PermissionDenied } from "@/lib/rbac";
 import { audit } from "@/lib/audit/writer";
-import { createKey, revokeKey, type Provider } from "@/lib/ai/byok-store";
+import {
+  createKey,
+  approveKey,
+  rejectKey,
+  revokeKey,
+  DualControlViolation,
+  type Provider,
+} from "@/lib/ai/byok-store";
 
 /**
  * BYOK admin server actions.
@@ -83,7 +90,7 @@ export async function createByokKeyAction(
       details: { provider: parsed.data.provider, label: parsed.data.label },
     });
     revalidatePath("/[locale]/admin/byok", "page");
-    return { ok: true, message: "Key stored." };
+    return { ok: true, message: "Submitted for approval." };
   } catch (err) {
     await audit({
       category: "byok",
@@ -95,6 +102,105 @@ export async function createByokKeyAction(
     });
     return { ok: false, message: "Failed to store key." };
   }
+}
+
+export async function approveByokKeyAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = idSchema.safeParse({ id: formData.get("id") });
+  if (!parsed.success) return { ok: false, message: "Invalid id." };
+
+  const actor = await getCurrentActor();
+  try {
+    assertPermission(actor, "byok-key:rotate");
+  } catch (err) {
+    if (err instanceof PermissionDenied) {
+      await audit({
+        category: "byok",
+        action: "byok.approve",
+        outcome: "denied",
+        actorId: actor.userId,
+        actorRoleSlug: actor.roles[0] ?? null,
+        target: `byok-key:${parsed.data.id}`,
+      });
+      return { ok: false, message: "Permission denied." };
+    }
+    throw err;
+  }
+
+  try {
+    const { demotedId } = await approveKey(parsed.data.id, actor.userId);
+    await audit({
+      category: "byok",
+      action: "byok.approve",
+      outcome: "success",
+      actorId: actor.userId,
+      actorRoleSlug: actor.roles[0] ?? null,
+      target: `byok-key:${parsed.data.id}`,
+      details: { demotedKeyId: demotedId },
+    });
+    revalidatePath("/[locale]/admin/byok", "page");
+    return { ok: true, message: "Key activated." };
+  } catch (err) {
+    const dualControl = err instanceof DualControlViolation;
+    await audit({
+      category: "byok",
+      action: "byok.approve",
+      outcome: "failure",
+      actorId: actor.userId,
+      actorRoleSlug: actor.roles[0] ?? null,
+      target: `byok-key:${parsed.data.id}`,
+      details: {
+        error: err instanceof Error ? err.message : "unknown",
+        dualControl,
+      },
+    });
+    return {
+      ok: false,
+      message: dualControl
+        ? "A different admin must approve this key."
+        : "Could not approve.",
+    };
+  }
+}
+
+export async function rejectByokKeyAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = idSchema.safeParse({ id: formData.get("id") });
+  if (!parsed.success) return { ok: false, message: "Invalid id." };
+
+  const actor = await getCurrentActor();
+  try {
+    assertPermission(actor, "byok-key:rotate");
+  } catch (err) {
+    if (err instanceof PermissionDenied) {
+      await audit({
+        category: "byok",
+        action: "byok.reject",
+        outcome: "denied",
+        actorId: actor.userId,
+        actorRoleSlug: actor.roles[0] ?? null,
+        target: `byok-key:${parsed.data.id}`,
+      });
+      return { ok: false, message: "Permission denied." };
+    }
+    throw err;
+  }
+
+  await rejectKey(parsed.data.id);
+  await audit({
+    category: "byok",
+    action: "byok.reject",
+    outcome: "success",
+    actorId: actor.userId,
+    actorRoleSlug: actor.roles[0] ?? null,
+    target: `byok-key:${parsed.data.id}`,
+  });
+  revalidatePath("/[locale]/admin/byok", "page");
+  return { ok: true, message: "Key rejected." };
 }
 
 export async function revokeByokKeyAction(

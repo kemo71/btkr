@@ -83,7 +83,7 @@ async function loadActiveAnthropicKey(): Promise<string> {
     .where(
       and(
         eq(schema.byokKeys.provider, "anthropic"),
-        eq(schema.byokKeys.isActive, true),
+        eq(schema.byokKeys.status, "active"),
       ),
     )
     .limit(1);

@@ -2,19 +2,22 @@
   "$comment": "BYOK admin page translations.",
   "page": {
     "title": "AI provider keys (BYOK)",
-    "subtitle": "Add Anthropic / OpenAI keys securely. Keys are encrypted on submit and never displayed in plaintext again."
+    "subtitle": "Add Anthropic / OpenAI keys securely. Keys are encrypted on submit and never displayed in plaintext. Activation requires a second admin's approval (dual control)."
   },
   "create": {
-    "title": "Add a new key",
-    "subtitle": "Any existing active key for the same provider will be rotated automatically.",
-    "submit": "Encrypt & store"
+    "title": "Submit a new key for approval",
+    "subtitle": "The key is stored as Pending until a different admin approves it; on approval it replaces the current active key.",
+    "submit": "Encrypt & submit"
   },
   "list": {
     "title": "Stored keys",
     "subtitle": "{count, plural, =0 {no keys} one {1 key} other {# keys}}",
     "empty": "No keys have been added yet.",
     "createdAt": "added",
-    "revoke": "Revoke"
+    "revoke": "Revoke",
+    "approve": "Approve",
+    "reject": "Reject",
+    "ownGuard": "You can't approve a key you submitted — a different admin must approve it."
   },
   "fields": {
     "provider": "Provider",
@@ -27,6 +30,7 @@
     "openai": "OpenAI"
   },
   "status": {
+    "pending": "Pending approval",
     "active": "Active",
     "rotated": "Rotated",
     "revoked": "Revoked"
