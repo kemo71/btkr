@@ -1,0 +1,43 @@
+{
+  "$comment": "Leaderboard translations.",
+  "page": {
+    "title": "Leaderboard",
+    "subtitle": "Celebrate top contributors and compete transparently on innovation points."
+  },
+  "you": {
+    "title": "Your standing",
+    "subtitle": "A summary of your points and current level.",
+    "level": "Level: {name}",
+    "points": "points",
+    "toNext": "{remaining} points to reach \"{next}\"",
+    "atTop": "You've reached the top level!"
+  },
+  "breakdown": {
+    "ideas": "Ideas submitted",
+    "scaled": "Ideas reaching Scale",
+    "votes": "Votes cast",
+    "comments": "Comments",
+    "accreds": "External accreditations",
+    "badges": "Internal badges"
+  },
+  "top": {
+    "title": "Top contributors",
+    "subtitle": "{count, plural, =0 {no participants} one {1 participant} other {# participants}}",
+    "empty": "No one has started yet. Be the first!"
+  },
+  "badges": {
+    "accred": "{count, plural, one {1 accreditation} other {# accreds}}",
+    "internal": "{count, plural, one {1 badge} other {# badges}}"
+  },
+  "rules": {
+    "title": "Scoring rules",
+    "subtitle": "Fully transparent point calculation.",
+    "ideaSubmitted": "per new idea submitted",
+    "ideaPastGate1": "when an idea passes the triage gate",
+    "ideaScaled": "when an idea reaches the Scale stage",
+    "voteCast": "per vote cast",
+    "commentPosted": "per comment posted",
+    "accreditationEarned": "per external accreditation (GInI / NPDP / IDEO U)",
+    "internalBadge": "per Btkr Valley internal badge"
+  }
+}

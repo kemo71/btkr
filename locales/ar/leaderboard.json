@@ -1,0 +1,43 @@
+{
+  "$comment": "ترجمات لوحة المتصدّرين.",
+  "page": {
+    "title": "لوحة المتصدّرين",
+    "subtitle": "احتفِ بأبرز المساهمين وتنافس بشفافية على نقاط الابتكار."
+  },
+  "you": {
+    "title": "ترتيبك",
+    "subtitle": "ملخّص نقاطك ومستواك الحالي.",
+    "level": "المستوى: {name}",
+    "points": "نقطة",
+    "toNext": "{remaining} نقطة للوصول إلى \"{next}\"",
+    "atTop": "وصلت إلى أعلى مستوى!"
+  },
+  "breakdown": {
+    "ideas": "أفكار مُقدّمة",
+    "scaled": "أفكار وصلت لمرحلة التوسعة",
+    "votes": "أصوات",
+    "comments": "تعليقات",
+    "accreds": "اعتمادات خارجية",
+    "badges": "شارات داخلية"
+  },
+  "top": {
+    "title": "أفضل المساهمين",
+    "subtitle": "{count, plural, =0 {لا يوجد مشاركون} one {مشارك واحد} two {مشاركان} few {{count} مشاركين} other {{count} مشاركاً}}",
+    "empty": "لم يبدأ أحد بعد. كن أول مشارك!"
+  },
+  "badges": {
+    "accred": "{count, plural, =0 {بدون} one {اعتماد} two {اعتمادان} few {{count} اعتمادات} other {{count} اعتماداً}}",
+    "internal": "{count, plural, =0 {بدون} one {شارة} two {شارتان} few {{count} شارات} other {{count} شارة}}"
+  },
+  "rules": {
+    "title": "قواعد منح النقاط",
+    "subtitle": "شفافية كاملة في طريقة الحساب.",
+    "ideaSubmitted": "نقطة لكل فكرة جديدة تُقدَّم",
+    "ideaPastGate1": "نقطة عند تجاوز الفكرة بوابة الفرز الأولى",
+    "ideaScaled": "نقطة عند وصول الفكرة لمرحلة التوسعة",
+    "voteCast": "نقطة لكل تصويت",
+    "commentPosted": "نقطة لكل تعليق",
+    "accreditationEarned": "نقطة لكل اعتماد خارجي (GInI / NPDP / IDEO U)",
+    "internalBadge": "نقطة لكل شارة وادي بتكر الداخلية"
+  }
+}
