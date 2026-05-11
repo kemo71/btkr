@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getIdeaByCode } from "@/lib/lifecycle/store";
+import { getIdeaByCode, listComments } from "@/lib/lifecycle/store";
 import { nextStages, stageTone, type Stage } from "@/lib/lifecycle/stages";
 import { requireActor } from "@/lib/auth/current-actor";
 import { can } from "@/lib/rbac";
@@ -8,6 +8,7 @@ import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { VoteButton } from "@/components/lifecycle/vote-button";
 import { GateDecisionForm } from "@/components/lifecycle/gate-decision-form";
+import { CommentForm } from "@/components/lifecycle/comment-form";
 import type { Locale } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
@@ -34,10 +35,12 @@ export default async function IdeaDetailPage({
   const { idea, events, voteCount } = result;
   const stage = idea.stage as Stage;
   const canVote = can(actor, "idea:vote");
+  const canComment = can(actor, "idea:comment");
   const canGate = can(actor, "gate:approve") || can(actor, "gate:reject");
   const forward = nextStages(stage).filter(
     (s) => s !== "archived" && s !== "rejected",
   );
+  const comments = await listComments(idea.id);
 
   const title = locale === "ar" ? idea.titleAr : idea.titleEn ?? idea.titleAr;
   const summary = idea.summaryAr;
@@ -172,6 +175,50 @@ export default async function IdeaDetailPage({
               </li>
             ))}
           </ol>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader
+          title={t("detail.comments")}
+          subtitle={t("detail.commentsCount", { count: comments.length })}
+        />
+        <CardBody className="flex flex-col gap-4">
+          {comments.length === 0 ? (
+            <p className="text-sm text-neutral-500">{t("detail.noComments")}</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {comments.map((c) => (
+                <li key={c.id} className="flex flex-col gap-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-medium text-neutral-900">
+                      {c.authorName}
+                    </span>
+                    <time
+                      dateTime={c.createdAt.toISOString()}
+                      className="text-xs text-neutral-400"
+                      dir="ltr"
+                    >
+                      {c.createdAt.toISOString().replace("T", " ").slice(0, 16)}
+                    </time>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm text-neutral-700">
+                    {c.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+          {canComment ? (
+            <CommentForm
+              ideaId={idea.id}
+              labels={{
+                placeholder: t("detail.commentPlaceholder"),
+                submit: t("detail.commentSubmit"),
+                sending: t("detail.commentSending"),
+              }}
+            />
+          ) : null}
         </CardBody>
       </Card>
     </main>

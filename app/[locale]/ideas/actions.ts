@@ -11,6 +11,7 @@ import {
   castVote,
   retractVote,
   transitionStage,
+  addComment,
 } from "@/lib/lifecycle/store";
 import { canTransition, type Stage } from "@/lib/lifecycle/stages";
 
@@ -129,6 +130,49 @@ export async function voteIdeaAction(
   } else {
     await retractVote({ ideaId: parsed.data.ideaId, userId: actor.userId });
   }
+  revalidatePath("/[locale]/ideas/[code]", "page");
+  return { ok: true };
+}
+
+const commentSchema = z.object({
+  ideaId: z.string().uuid(),
+  body: z.string().min(1).max(4000),
+});
+
+export async function commentOnIdeaAction(
+  _: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = commentSchema.safeParse({
+    ideaId: formData.get("ideaId"),
+    body: formData.get("body"),
+  });
+  if (!parsed.success) return { ok: false, message: "Invalid input." };
+
+  const actor = await getCurrentActor();
+  try {
+    assertPermission(actor, "idea:comment");
+  } catch (err) {
+    if (err instanceof PermissionDenied) {
+      return { ok: false, message: "Permission denied." };
+    }
+    throw err;
+  }
+
+  const id = await addComment({
+    ideaId: parsed.data.ideaId,
+    authorId: actor.userId,
+    body: parsed.data.body,
+  });
+  await audit({
+    category: "lifecycle",
+    action: "idea.comment",
+    outcome: "success",
+    actorId: actor.userId,
+    actorRoleSlug: actor.roles[0] ?? null,
+    target: `idea:${parsed.data.ideaId}`,
+    details: { commentId: id },
+  });
   revalidatePath("/[locale]/ideas/[code]", "page");
   return { ok: true };
 }

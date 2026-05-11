@@ -58,6 +58,12 @@
     "nextStage": "المرحلة التالية",
     "rationale": "المبرر (مطلوب)",
     "approve": "اعتماد",
-    "reject": "رفض"
+    "reject": "رفض",
+    "comments": "النقاش",
+    "commentsCount": "{count, plural, =0 {لا تعليقات} one {تعليق واحد} two {تعليقان} few {{count} تعليقات} other {{count} تعليقاً}}",
+    "noComments": "لا توجد تعليقات بعد. كن أول من يعلّق.",
+    "commentPlaceholder": "أضف تعليقاً…",
+    "commentSubmit": "إرسال",
+    "commentSending": "يُرسل…"
   }
 }

@@ -209,3 +209,66 @@ export async function hasVoted(input: {
     .limit(1);
   return Boolean(row);
 }
+
+/** A comment row joined with its author's display name, for rendering. */
+export interface CommentView {
+  id: string;
+  ideaId: string;
+  authorId: string;
+  authorName: string;
+  parentId: string | null;
+  body: string;
+  createdAt: Date;
+  editedAt: Date | null;
+}
+
+/** List an idea's comments, oldest first. Phase 1 renders them flat. */
+export async function listComments(ideaId: string): Promise<CommentView[]> {
+  const rows = await db
+    .select({
+      id: schema.ideaComments.id,
+      ideaId: schema.ideaComments.ideaId,
+      authorId: schema.ideaComments.authorId,
+      authorName: schema.users.fullName,
+      parentId: schema.ideaComments.parentId,
+      body: schema.ideaComments.body,
+      createdAt: schema.ideaComments.createdAt,
+      editedAt: schema.ideaComments.editedAt,
+    })
+    .from(schema.ideaComments)
+    .innerJoin(schema.users, eq(schema.users.id, schema.ideaComments.authorId))
+    .where(eq(schema.ideaComments.ideaId, ideaId))
+    .orderBy(schema.ideaComments.createdAt);
+  return rows;
+}
+
+/** Append a comment. `parentId` is accepted for future threading. */
+export async function addComment(input: {
+  ideaId: string;
+  authorId: string;
+  body: string;
+  parentId?: string | null;
+}): Promise<string> {
+  const [inserted] = await db
+    .insert(schema.ideaComments)
+    .values({
+      ideaId: input.ideaId,
+      authorId: input.authorId,
+      body: input.body,
+      parentId: input.parentId ?? null,
+    })
+    .returning({ id: schema.ideaComments.id });
+  return inserted.id;
+}
+
+/** Resolve an idea's UUID + public code from its code (for actions). */
+export async function ideaIdForCode(
+  code: string,
+): Promise<{ id: string; code: string } | null> {
+  const [row] = await db
+    .select({ id: schema.ideas.id, code: schema.ideas.code })
+    .from(schema.ideas)
+    .where(eq(schema.ideas.code, code))
+    .limit(1);
+  return row ?? null;
+}
