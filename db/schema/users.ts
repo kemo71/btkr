@@ -59,6 +59,13 @@ export const sessions = pgTable(
       .defaultNow(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    /**
+     * True when SSO succeeded but a required MFA second factor has not yet
+     * been satisfied. The actor resolver treats such sessions as
+     * unauthenticated for everything except the `/auth/mfa` flow, which
+     * flips this to false on a successful TOTP verification.
+     */
+    mfaPending: boolean("mfa_pending").notNull().default(false),
   },
   (t) => [
     index("sessions_user_idx").on(t.userId),

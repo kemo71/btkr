@@ -89,6 +89,6 @@ export default function middleware(req: NextRequest): NextResponse {
 
 export const config = {
   matcher: [
-    "/((?!api|_next|_vercel|sw\\.js|manifest\\.webmanifest|icon|apple-icon|icons|.*\\..*).*)",
+    "/((?!api|auth|_next|_vercel|sw\\.js|manifest\\.webmanifest|icon|apple-icon|icons|.*\\..*).*)",
   ],
 };
