@@ -1,0 +1,74 @@
+# Btkr Valley — local development orchestration.
+#
+# Brings up: app (Next.js standalone), Postgres 16, Redis 7, nginx reverse
+# proxy. Approximates the production topology so local dev exercises the
+# same network paths.
+#
+# Usage:
+#   docker compose -f infra/docker-compose.yml up --build
+#   docker compose -f infra/docker-compose.yml down -v   # purge volumes
+#
+# Production: replace `db` and `cache` with managed equivalents in the
+# KSA region (RDS / ElastiCache / SDAIA-approved providers). See
+# docs/togaf/03-technology-architecture.md.
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://btkr:btkr_dev_pwd@db:5432/btkr
+      REDIS_URL: redis://cache:6379
+      # NEVER commit a real BYOK_KEK. This is a dev-only random value.
+      BYOK_KEK: ${BYOK_KEK:-ZGV2X29ubHlfNjRfYnl0ZV9rZWtfYmFzZTY0X3Bsc19yZXBsYWNlX21l}
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: btkr
+      POSTGRES_USER: btkr
+      POSTGRES_PASSWORD: btkr_dev_pwd
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U btkr -d btkr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  cache:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - cache_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  proxy:
+    image: nginx:1.27-alpine
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  cache_data:
