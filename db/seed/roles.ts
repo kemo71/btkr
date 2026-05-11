@@ -1,4 +1,5 @@
 import "server-only";
+import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db/client";
 import { PERMISSIONS, type Permission } from "@/lib/rbac";
 
@@ -130,5 +131,3 @@ export async function seedRolesAndPermissions(): Promise<void> {
     }
   }
 }
-
-import { eq } from "drizzle-orm";
