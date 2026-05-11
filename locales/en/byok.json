@@ -1,0 +1,34 @@
+{
+  "$comment": "BYOK admin page translations.",
+  "page": {
+    "title": "AI provider keys (BYOK)",
+    "subtitle": "Add Anthropic / OpenAI keys securely. Keys are encrypted on submit and never displayed in plaintext again."
+  },
+  "create": {
+    "title": "Add a new key",
+    "subtitle": "Any existing active key for the same provider will be rotated automatically.",
+    "submit": "Encrypt & store"
+  },
+  "list": {
+    "title": "Stored keys",
+    "subtitle": "{count, plural, =0 {no keys} one {1 key} other {# keys}}",
+    "empty": "No keys have been added yet.",
+    "createdAt": "added",
+    "revoke": "Revoke"
+  },
+  "fields": {
+    "provider": "Provider",
+    "label": "Descriptive label",
+    "key": "Key value",
+    "keyHint": "This value will not be shown again after saving."
+  },
+  "providers": {
+    "anthropic": "Anthropic (Claude)",
+    "openai": "OpenAI"
+  },
+  "status": {
+    "active": "Active",
+    "rotated": "Rotated",
+    "revoked": "Revoked"
+  }
+}
