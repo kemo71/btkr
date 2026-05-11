@@ -31,7 +31,7 @@ implemented; **(out of scope)** are deferred to a later phase with rationale.
 
 | Control     | Implementation                                                                | Evidence                                   |
 | ----------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
-| ECC-2-1-1   | SBOM exported per release (`pnpm` → CycloneDX)                                | (planned, CI step)                         |
+| ECC-2-1-1   | SBOM exported per release (`pnpm` → CycloneDX)                                | Implemented — `audit` job in `.github/workflows/ci.yml`                         |
 | ECC-2-1-2   | Data classification: public / internal / restricted / secret applied in code  | Header comments + table in `STRUCTURE.md`  |
 
 ### 2-2 Identity & Access Management
@@ -39,11 +39,11 @@ implemented; **(out of scope)** are deferred to a later phase with rationale.
 | Control     | Implementation                                                                | Evidence                                                                          |
 | ----------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | ECC-2-2-1   | Unique identity per user (no shared accounts)                                 | `db/schema/users.ts` — `email` unique constraint                                  |
-| ECC-2-2-2   | MFA required for privileged roles (admin, stakeholder)                        | `users.mfa_enrolled` flag, enforced in session middleware (planned)               |
+| ECC-2-2-2   | MFA required for privileged roles (admin, stakeholder)                        | Implemented — `sessions.mfa_pending`; if the IdP doesn't assert MFA, privileged roles must enroll/verify TOTP via `/auth/mfa` (`lib/auth/mfa*.ts`)               |
 | ECC-2-2-3   | Least privilege via fine-grained RBAC                                         | `lib/rbac/permissions.ts` (27 explicit permissions), deny-by-default in `policy.ts` |
 | ECC-2-2-4   | Authorization reviewed on role change                                         | `user_roles` carries `granted_by`, `granted_at`, `expires_at`                     |
-| ECC-2-2-5   | Privileged session timeouts                                                   | `sessions.expires_at` (planned: 30 min for admin)                                 |
-| ECC-2-2-6   | Federated SSO ready (OIDC + SAML 2.0)                                         | `users.sso_subject`; SSO adapter in `lib/auth/sso/` (planned)                     |
+| ECC-2-2-5   | Privileged session timeouts                                                   | Implemented — `sessions.expires_at`; 8h default, 30m for admin/stakeholder (`lib/auth/session.ts`)                                 |
+| ECC-2-2-6   | Federated SSO ready (OIDC + SAML 2.0)                                         | Implemented — OIDC (Auth Code + PKCE) and SAML 2.0 adapters in `lib/auth/sso/`; `/auth/login`, `/auth/callback`, `/auth/saml/callback`                     |
 
 ### 2-3 Network Security
 
@@ -77,11 +77,11 @@ Out of scope for app — endpoint hardening is the responsibility of KSAA IT.
 
 | Control     | Implementation                                                                | Evidence                                                                       |
 | ----------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| ECC-2-7-1   | Secure SDLC — typecheck, lint, tests on every PR                              | Vercel preview + (planned) GitHub Actions                                      |
-| ECC-2-7-2   | Input validation at all server boundaries                                     | (planned) Zod schemas on every route handler                                   |
+| ECC-2-7-1   | Secure SDLC — typecheck, lint, tests on every PR                              | Implemented — `.github/workflows/ci.yml` (typecheck/lint/build) + Vercel previews                                      |
+| ECC-2-7-2   | Input validation at all server boundaries                                     | Zod schemas on the route handler + every server action (`/api/coach`, BYOK / ideas / audit / MFA actions); broader coverage ongoing |
 | ECC-2-7-3   | Output encoding — React auto-escapes JSX                                      | React 19 default behavior                                                      |
 | ECC-2-7-4   | CSRF protection                                                               | Server actions use Next.js anti-CSRF token; cookies are `SameSite=Lax`         |
-| ECC-2-7-5   | Security headers (HSTS, CSP, X-Frame-Options, Referrer-Policy)                | `infra/nginx/nginx.conf` + Next.js middleware (planned strict CSP)             |
+| ECC-2-7-5   | Security headers (HSTS, CSP, X-Frame-Options, Referrer-Policy)                | Implemented — strict per-request-nonce CSP + HSTS + X-Frame-Options DENY + Referrer-Policy + Permissions-Policy in `middleware.ts`; nginx adds the same belt-and-suspenders             |
 | ECC-2-7-6   | Dependency vulnerability scanning                                             | `pnpm audit` in CI                                                             |
 
 ### 2-8 Logging & Audit
@@ -90,7 +90,7 @@ Out of scope for app — endpoint hardening is the responsibility of KSAA IT.
 | ----------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | ECC-2-8-1   | Centralized, immutable audit log                                              | `db/schema/audit.ts` — append-only, six categories                       |
 | ECC-2-8-2   | Audit events for sensitive actions (auth, RBAC change, key rotation)          | `lib/audit/writer.ts` is the only sanctioned insert path                 |
-| ECC-2-8-3   | Tamper detection (audit row hashing)                                          | (planned, Phase 2 — hash chain or external WORM)                         |
+| ECC-2-8-3   | Tamper detection (audit row hashing)                                          | Implemented — `prev_hash`/`entry_hash` SHA-256 chain on every row, verified via `/admin/audit`; WORM checkpoint is Phase 2 (ADR 0003)                         |
 | ECC-2-8-4   | Retention ≥ 12 months                                                         | Backup policy (operations runbook)                                       |
 
 ### 2-9 Backup
@@ -161,4 +161,4 @@ Coaching UI to reinforce *innovation* awareness — out of cybersecurity scope.
 
 | Quarter    | Reviewer    | Status     | Notes                            |
 | ---------- | ----------- | ---------- | -------------------------------- |
-| 2026-Q2    | (pending)   | —          | Initial mapping established      |
+| 2026-Q2    | (pending)   | —          | Mapping established; sessions/SSO/MFA/CSP/CI/audit-chain implemented |

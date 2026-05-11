@@ -66,12 +66,20 @@ opens with deps installed and TypeScript verified.
 
 - **Arabic-first, RTL by default.** All UI defaults to `dir="rtl"` `lang="ar"`;
   English is a toggle via i18n, never the canonical form.
+- **Auth.** Federated SSO (OIDC Auth-Code+PKCE or SAML 2.0) → `lib/auth/sso/`;
+  sessions in `lib/auth/session.ts` (cookie holds the token, DB holds its
+  SHA-256 hash); privileged roles need TOTP MFA (`lib/auth/mfa*.ts`). In dev
+  with no IdP, the `/dev` page / `BTKR_DEV_USER` env shim stands in — disabled
+  in production.
 - **No standing AI keys server-side.** Anthropic / OpenAI keys are BYOK,
-  encrypted at rest in `lib/crypto/`, rotated quarterly.
+  AES-256-GCM-sealed at rest in `lib/crypto/`, rotated quarterly.
 - **RBAC.** Admin / Stakeholder / Employee / Auditor. Permission checks
-  centralized in `lib/rbac/`; deny-by-default at the policy layer.
-- **Audit.** Every state transition writes to the append-only log in
-  `lib/audit/`. Don't bypass — even admin actions are logged.
+  centralized in `lib/rbac/`; deny-by-default at the policy layer. Resolve the
+  actor with `getCurrentActor()`.
+- **Audit.** Every sensitive action writes to the append-only, hash-chained
+  log via `lib/audit/writer.ts`. Don't bypass — even admin actions are logged.
+- **CSP.** Strict, per-request nonce, set in `middleware.ts`. Inline scripts
+  need the nonce from `headers().get("x-csp-nonce")`.
 - **TSDoc on every public API.** Exports from `lib/*` and `components/*`
   must carry TSDoc with an `@example` block.
 - **No new top-level dirs without updating `docs/STRUCTURE.md`.**

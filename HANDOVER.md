@@ -185,17 +185,25 @@ RPO 15 min · RTO 4 h.
 | Audit Explorer + hash chain | `/admin/audit`, `lib/audit/chain.ts`                 | ✅      |
 | Strict CSP + security headers | `middleware.ts`, `infra/nginx/nginx.conf`          | ✅      |
 | CI (typecheck/lint/build/audit/SBOM/Trivy) | `.github/workflows/ci.yml`            | ✅      |
-| Federated SSO (OIDC/SAML)  | `lib/auth/sso/*`                                      | 🟡 scaffold — Phase 1.5 |
-| MFA (TOTP)                 | `lib/auth/mfa.ts`                                     | 🟡 verify impl; enrollment Phase 1.5 |
+| Sessions (cookie, SHA-256 hash, sliding TTL) | `lib/auth/session.ts`, `sessions` table | ✅   |
+| Federated SSO — OIDC (Auth Code + PKCE)    | `lib/auth/sso/oidc.ts`, `/auth/{login,callback}` | ✅ — needs an IdP |
+| Federated SSO — SAML 2.0                    | `lib/auth/sso/saml.ts`, `/auth/saml/callback` | ✅ — needs an IdP |
+| MFA — TOTP enrollment + verify + recovery codes | `lib/auth/mfa.ts`, `lib/auth/mfa-store.ts`, `/auth/mfa`, `mfa_credentials` table | ✅ |
 | Dev role switcher          | `/dev`, `BTKR_DEV_USER` env / `btkr_dev_user` cookie  | ✅ (dev only) |
+
+> **Production readiness:** SSO + MFA are implemented end-to-end. To run in
+> production you must configure an IdP via env (`SSO_MECHANISM`, `OIDC_*` or
+> `SAML_*`, `APP_ORIGIN`, `AUTH_STATE_SECRET`, `BYOK_KEK`,
+> `MFA_REQUIRED_ROLES`) — see `.env.example`. The dev shim (`BTKR_DEV_USER` /
+> `/dev`) is hard-disabled when `NODE_ENV=production`.
 
 ## 11. Risks and known gaps
 
 | Risk / Gap                                                          | Planned remediation                                  |
 | ------------------------------------------------------------------- | ---------------------------------------------------- |
 | Official DGA tokens not yet integrated — using approximate values   | Swap `@theme` block in `app/globals.css` on receipt  |
-| SSO adapters are scaffolded, not implemented — production can't run yet | Phase 1.5 fills `lib/auth/sso/{oidc,saml}.ts`     |
-| MFA enrollment (QR provisioning, recovery codes) not built          | Phase 1.5; `verifyTotp` primitive is ready           |
+| SSO/MFA verified by code review + build only — no live IdP in CI    | Integration-test against a Keycloak / SimpleSAMLphp test IdP before cutover |
+| Protected pages throw on no-actor instead of redirecting to /auth/login | Add a `requireActor()` wrapper that redirects; mechanical change across ~8 pages |
 | Audit chain doesn't yet defend against suffix truncation            | Phase 2 — publish chain checkpoints to a WORM bucket |
 | Dual-control approval for BYOK rotation not yet implemented          | Phase 2 admin UI                                     |
 | KSAA logo + official brand assets not loaded                        | Replace placeholders in `public/brand/` when delivered |
