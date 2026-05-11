@@ -1,0 +1,21 @@
+{
+  "$comment": "AI Innovation Coach translations.",
+  "page": {
+    "title": "Innovation Coach",
+    "subtitle": "Have a step-by-step conversation with an AI coach grounded in your chosen methodology.",
+    "byokNotice": "This coach uses BYOK keys configured in Admin. Your keys are never stored in code or env variables."
+  },
+  "chat": {
+    "title": "Conversation",
+    "subtitle": "Pick a methodology for specialized guidance, or start a general session.",
+    "framework": "Methodology",
+    "general": "General (no methodology)",
+    "you": "You",
+    "coach": "Coach",
+    "placeholder": "Describe your idea or problem… (Ctrl+Enter to send)",
+    "send": "Send",
+    "sending": "Sending…",
+    "streamError": "Something went wrong while streaming. Try again.",
+    "empty": "Start the conversation by asking a question."
+  }
+}
