@@ -14,7 +14,21 @@
     "title": "Btkr Valley",
     "description": "An Arabic-first innovation management platform aligned to the DGA Design System and NCA Essential Cybersecurity Controls — turning employee ideas into measurable institutional impact.",
     "ctaArchitecture": "Architecture docs (TOGAF)",
-    "ctaPwa": "About PWAs"
+    "ctaPwa": "About PWAs",
+    "cards": {
+      "lifecycle": {
+        "title": "Idea lifecycle",
+        "body": "From submit to impact — configurable stage gates with an auditable decision log."
+      },
+      "coach": {
+        "title": "Innovation Coach",
+        "body": "BYOK keys for AI providers. No standing keys on the server."
+      },
+      "frameworks": {
+        "title": "Innovation frameworks",
+        "body": "TRIZ · SIT · JTBD · Six Hats — a wizard recommends the right one."
+      }
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
