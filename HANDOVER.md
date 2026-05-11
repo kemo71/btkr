@@ -173,22 +173,23 @@ RPO 15 min · RTO 4 h.
 | Area                       | Routes / modules                                      | Status |
 | -------------------------- | ----------------------------------------------------- | ------ |
 | PWA shell + i18n (RTL)     | `app/[locale]/*`, `i18n/`, `middleware.ts`            | ✅      |
-| DGA design tokens + primitives | `app/globals.css`, `components/dga/*`             | ✅ (approximate tokens) |
+| DGA design tokens (swappable) + primitives | `app/dga-tokens.css`, `app/globals.css`, `components/dga/*` | ✅ (approximate values; one-file swap — `docs/compliance/dga-token-import.md`) |
 | RBAC + audit + crypto      | `lib/rbac/*`, `lib/audit/*`, `lib/crypto/*`           | ✅      |
 | DB schema + migrations + seed | `db/schema/*`, `db/migrations/*`, `scripts/*`      | ✅      |
-| BYOK admin UI              | `/admin/byok`, `lib/ai/byok-store.ts`                 | ✅      |
+| BYOK admin UI + dual-control rotation | `/admin/byok`, `lib/ai/byok-store.ts`      | ✅ (2nd-admin approval — ADR 0004) |
 | AI Innovation Coach        | `/coach`, `/api/coach`, `lib/ai/coach.ts`             | ✅      |
 | Methodology Wizard         | `/frameworks`, `lib/frameworks/*`                     | ✅      |
-| Idea lifecycle             | `/ideas`, `/ideas/new`, `/ideas/[code]`, `lib/lifecycle/*` | ✅ |
+| Idea lifecycle + comments  | `/ideas`, `/ideas/new`, `/ideas/[code]`, `lib/lifecycle/*` | ✅ |
 | Strategic Dashboard        | `/dashboard`, `lib/dashboard/queries.ts`              | ✅      |
 | Leaderboard + scoring      | `/leaderboard`, `lib/leaderboard/*`                   | ✅      |
-| Audit Explorer + hash chain | `/admin/audit`, `lib/audit/chain.ts`                 | ✅      |
+| Audit Explorer + hash chain + WORM checkpoints | `/admin/audit`, `lib/audit/{chain,checkpoint}.ts` | ✅ |
 | Strict CSP + security headers | `middleware.ts`, `infra/nginx/nginx.conf`          | ✅      |
-| CI (typecheck/lint/build/audit/SBOM/Trivy) | `.github/workflows/ci.yml`            | ✅      |
+| Auth UX — `requireActor()`, sign-in/out, nav | `lib/auth/current-actor.ts`, `components/ui/auth-menu.tsx` | ✅ |
 | Sessions (cookie, SHA-256 hash, sliding TTL) | `lib/auth/session.ts`, `sessions` table | ✅   |
 | Federated SSO — OIDC (Auth Code + PKCE)    | `lib/auth/sso/oidc.ts`, `/auth/{login,callback}` | ✅ — needs an IdP |
 | Federated SSO — SAML 2.0                    | `lib/auth/sso/saml.ts`, `/auth/saml/callback` | ✅ — needs an IdP |
 | MFA — TOTP enrollment + verify + recovery codes | `lib/auth/mfa.ts`, `lib/auth/mfa-store.ts`, `/auth/mfa`, `mfa_credentials` table | ✅ |
+| CI (typecheck/lint/build/audit/SBOM/Trivy + a11y) | `.github/workflows/ci.yml`, `tests/e2e/`, `playwright.config.ts` | ✅ |
 | Dev role switcher          | `/dev`, `BTKR_DEV_USER` env / `btkr_dev_user` cookie  | ✅ (dev only) |
 
 > **Production readiness:** SSO + MFA are implemented end-to-end. To run in
@@ -201,14 +202,13 @@ RPO 15 min · RTO 4 h.
 
 | Risk / Gap                                                          | Planned remediation                                  |
 | ------------------------------------------------------------------- | ---------------------------------------------------- |
-| Official DGA tokens not yet integrated — using approximate values   | Swap `@theme` block in `app/globals.css` on receipt  |
-| SSO/MFA verified by code review + build only — no live IdP in CI    | Integration-test against a Keycloak / SimpleSAMLphp test IdP before cutover |
-| Protected pages throw on no-actor instead of redirecting to /auth/login | Add a `requireActor()` wrapper that redirects; mechanical change across ~8 pages |
-| Audit chain doesn't yet defend against suffix truncation            | Phase 2 — publish chain checkpoints to a WORM bucket |
-| Dual-control approval for BYOK rotation not yet implemented          | Phase 2 admin UI                                     |
+| Official DGA tokens not yet integrated — using approximate values   | One-file swap of `app/dga-tokens.css` — `docs/compliance/dga-token-import.md` |
+| SSO/MFA + the audit/BYOK flows verified by code review + build only | Integration-test against a Keycloak / SimpleSAMLphp test IdP and a Postgres service before cutover |
+| WORM mirroring of audit checkpoints not wired (table-only locally)  | Wire `audit_checkpoints.worm_ref` to an S3 Object-Lock bucket in prod |
+| `requireActor()` redirects to `/auth/login` on missing permission too (no 403 page) | Add a dedicated 403 page; small change |
 | KSAA logo + official brand assets not loaded                        | Replace placeholders in `public/brand/` when delivered |
-| No automated a11y (axe) / visual regression in CI                   | Phase 2 — Playwright + axe-core                      |
-| Idea comments have a schema + scoring weight but no UI yet           | Phase 2 — comment thread on `/ideas/[code]`          |
+| Visual-regression (screenshot) testing not in CI — only axe + smoke | Add Percy/Chromatic or Playwright snapshots          |
+| Idea comments are flat (no threading UI) though `parent_id` exists  | Render the tree when threading is requested          |
 
 ---
 
