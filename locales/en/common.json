@@ -1,0 +1,27 @@
+{
+  "$comment": "Btkr Valley — English message catalog. Keys must mirror locales/ar/common.json.",
+  "app": {
+    "name": "Btkr Valley",
+    "tagline": "Innovation management for King Salman Global Academy for Arabic Language"
+  },
+  "locale": {
+    "switchTo": "Change language",
+    "ar": "العربية",
+    "en": "English"
+  },
+  "home": {
+    "badge": "PWA · Installable on iOS & Android",
+    "title": "Btkr Valley",
+    "description": "An Arabic-first innovation management platform aligned to the DGA Design System and NCA Essential Cybersecurity Controls — turning employee ideas into measurable institutional impact.",
+    "ctaArchitecture": "Architecture docs (TOGAF)",
+    "ctaPwa": "About PWAs"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "ideas": "Ideas",
+    "coach": "Innovation Coach",
+    "frameworks": "Frameworks",
+    "leaderboard": "Leaderboard",
+    "admin": "Admin"
+  }
+}
