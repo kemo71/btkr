@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getIdeaByCode } from "@/lib/lifecycle/store";
 import { nextStages, stageTone, type Stage } from "@/lib/lifecycle/stages";
-import { getCurrentActor } from "@/lib/auth/current-actor";
+import { requireActor } from "@/lib/auth/current-actor";
 import { can } from "@/lib/rbac";
 import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
@@ -26,10 +26,11 @@ export default async function IdeaDetailPage({
   setRequestLocale(locale);
   const t = await getTranslations("ideas");
 
+  const actor = await requireActor("idea:read");
+
   const result = await getIdeaByCode(code);
   if (!result) notFound();
 
-  const actor = await getCurrentActor();
   const { idea, events, voteCount } = result;
   const stage = idea.stage as Stage;
   const canVote = can(actor, "idea:vote");

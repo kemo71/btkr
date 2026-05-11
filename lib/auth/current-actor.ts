@@ -1,9 +1,10 @@
 import "server-only";
 import { eq } from "drizzle-orm";
 import { cache } from "react";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { db, schema } from "@/lib/db/client";
-import { resolveActor, type Actor } from "@/lib/rbac";
+import { resolveActor, can, type Actor, type Permission } from "@/lib/rbac";
 import { resolveSession } from "./session";
 
 /** Dev-only cookie that overrides BTKR_DEV_USER per browser session. */
@@ -86,6 +87,36 @@ export async function tryGetCurrentActor(): Promise<Actor | null> {
     if (err instanceof NotAuthenticated) return null;
     throw err;
   }
+}
+
+/**
+ * Page guard: resolve the actor, or `redirect()` away.
+ *
+ * - No actor → `redirect("/auth/login?returnTo=<current path>")`.
+ * - `permission` given and the actor lacks it → `redirect("/")` (a dedicated
+ *   403 page is future work).
+ *
+ * The current path comes from the `x-pathname` request header that the
+ * middleware injects. Use this at the top of every protected page/route
+ * instead of `getCurrentActor()` + a manual `redirect`.
+ *
+ * @example
+ * export default async function AdminPage() {
+ *   const actor = await requireActor("byok-key:read");
+ *   // ...safe to proceed
+ * }
+ */
+export async function requireActor(permission?: Permission): Promise<Actor> {
+  const actor = await tryGetCurrentActor();
+  if (!actor) {
+    const h = await headers();
+    const path = h.get("x-pathname") || "/";
+    redirect(`/auth/login?returnTo=${encodeURIComponent(path)}`);
+  }
+  if (permission && !can(actor, permission)) {
+    redirect("/");
+  }
+  return actor;
 }
 
 export class NotAuthenticated extends Error {

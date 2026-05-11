@@ -1,7 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getCurrentActor } from "@/lib/auth/current-actor";
-import { can } from "@/lib/rbac";
+import { requireActor } from "@/lib/auth/current-actor";
 import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { leaderboard } from "@/lib/leaderboard/queries";
@@ -31,10 +29,7 @@ export default async function LeaderboardPage({
   setRequestLocale(locale);
   const t = await getTranslations("leaderboard");
 
-  const actor = await getCurrentActor();
-  if (!can(actor, "idea:read")) {
-    redirect(locale === "ar" ? "/" : `/${locale}`);
-  }
+  const actor = await requireActor("idea:read");
 
   const rows = await leaderboard(25);
   const me = rows.find((r) => r.userId === actor.userId);

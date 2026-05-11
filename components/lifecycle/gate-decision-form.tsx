@@ -38,14 +38,6 @@ export function GateDecisionForm({
   );
   const [to, setTo] = useState<Stage>(forward[0]);
 
-  function submitWith(decision: "approve" | "reject") {
-    return (e: React.FormEvent<HTMLFormElement>) => {
-      const target = e.currentTarget;
-      (target.elements.namedItem("decision") as HTMLInputElement).value = decision;
-      // The default submit is allowed; just set the hidden field before it.
-    };
-  }
-
   return (
     <form action={formAction} className="grid gap-4">
       <input type="hidden" name="ideaId" value={ideaId} />

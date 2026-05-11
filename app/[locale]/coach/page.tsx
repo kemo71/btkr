@@ -1,7 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getCurrentActor } from "@/lib/auth/current-actor";
-import { can } from "@/lib/rbac";
+import { requireActor } from "@/lib/auth/current-actor";
 import { Card, CardBody, CardHeader, Badge } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { CoachChat } from "@/components/coach/coach-chat";
@@ -30,10 +28,7 @@ export default async function CoachPage({
   const t = await getTranslations("coach");
   const tf = await getTranslations("frameworks");
 
-  const actor = await getCurrentActor();
-  if (!can(actor, "coach:use")) {
-    redirect(locale === "ar" ? "/" : `/${locale}`);
-  }
+  await requireActor("coach:use");
 
   const allowed = new Set(FRAMEWORKS.map((f) => f.slug));
   const initialFramework =

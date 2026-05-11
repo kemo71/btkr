@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { listIdeas } from "@/lib/lifecycle/store";
 import { stageTone } from "@/lib/lifecycle/stages";
-import { getCurrentActor } from "@/lib/auth/current-actor";
+import { requireActor } from "@/lib/auth/current-actor";
 import { can } from "@/lib/rbac";
 import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
@@ -25,7 +25,7 @@ export default async function IdeasPage({
   setRequestLocale(locale);
   const t = await getTranslations("ideas");
 
-  const actor = await getCurrentActor();
+  const actor = await requireActor("idea:read");
   const ideas = await listIdeas();
   const canCreate = can(actor, "idea:create");
   const baseHref = locale === "ar" ? "/ideas" : `/${locale}/ideas`;

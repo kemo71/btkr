@@ -1,7 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getCurrentActor } from "@/lib/auth/current-actor";
-import { can } from "@/lib/rbac";
+import { requireActor } from "@/lib/auth/current-actor";
 import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { FunnelChart } from "@/components/dashboard/funnel-chart";
@@ -14,7 +12,6 @@ import {
   headlineKpis,
 } from "@/lib/dashboard/queries";
 import { STAGES, stageTone, type Stage } from "@/lib/lifecycle/stages";
-import { FRAMEWORKS } from "@/lib/frameworks";
 import type { Locale } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
@@ -45,10 +42,7 @@ export default async function DashboardPage({
   const ti = await getTranslations("ideas");
   const tf = await getTranslations("frameworks");
 
-  const actor = await getCurrentActor();
-  if (!can(actor, "idea:read")) {
-    redirect(locale === "ar" ? "/" : `/${locale}`);
-  }
+  await requireActor("idea:read");
 
   const [funnel, contributors, adoption, decisions, kpis] = await Promise.all([
     funnelByStage(),

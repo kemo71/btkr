@@ -9,6 +9,10 @@
     "ar": "العربية",
     "en": "English"
   },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
   "home": {
     "badge": "PWA · Installable on iOS & Android",
     "title": "Btkr Valley",

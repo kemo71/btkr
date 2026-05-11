@@ -1,7 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getCurrentActor } from "@/lib/auth/current-actor";
-import { can } from "@/lib/rbac";
+import { requireActor } from "@/lib/auth/current-actor";
 import { Badge, Card, CardBody, CardHeader, Field, Input, Select } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { AuditVerifyButton } from "@/components/admin/audit-verify-button";
@@ -42,10 +40,7 @@ export default async function AuditExplorerPage({
   setRequestLocale(locale);
   const t = await getTranslations("audit");
 
-  const actor = await getCurrentActor();
-  if (!can(actor, "audit:read")) {
-    redirect(locale === "ar" ? "/" : `/${locale}`);
-  }
+  await requireActor("audit:read");
 
   const page = Math.max(0, parseInt(sp.page ?? "0", 10) || 0);
   const filter = {

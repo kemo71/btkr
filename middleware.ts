@@ -77,8 +77,10 @@ export default function middleware(req: NextRequest): NextResponse {
   const nonce = crypto.randomUUID().replace(/-/g, "");
   const isDev = process.env.NODE_ENV !== "production";
 
-  // Forward the nonce to RSC via a request header.
+  // Forward the nonce + the request path to RSC via request headers.
+  // (`x-pathname` lets `requireActor()` build a returnTo for /auth/login.)
   req.headers.set("x-csp-nonce", nonce);
+  req.headers.set("x-pathname", req.nextUrl.pathname);
 
   // Run next-intl. It returns a NextResponse (rewrite/redirect) or null.
   const intlResponse = intlMiddleware(req);

@@ -1,6 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getCurrentActor } from "@/lib/auth/current-actor";
+import { requireActor } from "@/lib/auth/current-actor";
 import { can } from "@/lib/rbac";
 import { listKeys } from "@/lib/ai/byok-store";
 import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
@@ -31,10 +30,7 @@ export default async function ByokAdminPage({
   setRequestLocale(locale);
   const t = await getTranslations("byok");
 
-  const actor = await getCurrentActor();
-  if (!can(actor, "byok-key:read")) {
-    redirect(`/${locale === "ar" ? "" : `${locale}/`}`);
-  }
+  const actor = await requireActor("byok-key:read");
 
   const keys = await listKeys();
   const canCreate = can(actor, "byok-key:create");

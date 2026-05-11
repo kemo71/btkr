@@ -1,7 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getCurrentActor } from "@/lib/auth/current-actor";
-import { can } from "@/lib/rbac";
+import { requireActor } from "@/lib/auth/current-actor";
 import { Card, CardBody, CardHeader } from "@/components/dga";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { IdeaCreateForm } from "@/components/lifecycle/idea-create-form";
@@ -26,10 +24,7 @@ export default async function NewIdeaPage({
   const t = await getTranslations("ideas");
   const tf = await getTranslations("frameworks");
 
-  const actor = await getCurrentActor();
-  if (!can(actor, "idea:create")) {
-    redirect(locale === "ar" ? "/ideas" : `/${locale}/ideas`);
-  }
+  await requireActor("idea:create");
 
   const frameworkOptions = FRAMEWORKS.map((f) => ({
     slug: f.slug,
