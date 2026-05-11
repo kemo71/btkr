@@ -105,16 +105,21 @@ See: [`docs/togaf/03-technology-architecture.md`](docs/togaf/03-technology-archi
 
 ## 7. Audit & evidence
 
-- **Audit log**: append-only `audit_log` table, six categories
-  (`auth`, `rbac`, `byok`, `lifecycle`, `config`, `export`). The only
-  sanctioned write path is [`lib/audit/writer.ts`](lib/audit/writer.ts).
+- **Audit log**: append-only `audit_log`, six categories (`auth`, `rbac`,
+  `byok`, `lifecycle`, `config`, `export`). The only sanctioned write path
+  is [`lib/audit/writer.ts`](lib/audit/writer.ts).
+- **Tamper-evident**: each row carries `prev_hash` + `entry_hash` forming a
+  SHA-256 chain ([`lib/audit/chain.ts`](lib/audit/chain.ts)). The Audit
+  Explorer (`/admin/audit`) has a one-click `Verify chain` that re-derives
+  every hash and reports the first broken row id. See
+  [ADR 0003](docs/adr/0003-audit-hash-chain.md).
 - **Lifecycle events**: every stage transition recorded immutably in
-  `lifecycle_events`; the `ideas.stage` column is a denormalized projection
-  of the latest event.
+  `lifecycle_events`; `ideas.stage` is a denormalized projection of the
+  latest event.
 - **Retention**: ≥ 12 months in primary; archived to WORM bucket per
-  ECC-2-8-4.
-- **Export**: admin or auditor role can export via the admin UI; export is
-  itself logged as an audit event.
+  ECC-2-8-4 (Phase 2 also publishes chain checkpoints there).
+- **Explorer**: `/admin/audit` — paginated, filterable by category + date,
+  auditor/admin only.
 
 ---
 
@@ -163,21 +168,43 @@ RPO 15 min · RTO 4 h.
 
 ---
 
-## 10. Risks and known gaps (Phase 1)
+## 10. Feature map (what's implemented)
+
+| Area                       | Routes / modules                                      | Status |
+| -------------------------- | ----------------------------------------------------- | ------ |
+| PWA shell + i18n (RTL)     | `app/[locale]/*`, `i18n/`, `middleware.ts`            | ✅      |
+| DGA design tokens + primitives | `app/globals.css`, `components/dga/*`             | ✅ (approximate tokens) |
+| RBAC + audit + crypto      | `lib/rbac/*`, `lib/audit/*`, `lib/crypto/*`           | ✅      |
+| DB schema + migrations + seed | `db/schema/*`, `db/migrations/*`, `scripts/*`      | ✅      |
+| BYOK admin UI              | `/admin/byok`, `lib/ai/byok-store.ts`                 | ✅      |
+| AI Innovation Coach        | `/coach`, `/api/coach`, `lib/ai/coach.ts`             | ✅      |
+| Methodology Wizard         | `/frameworks`, `lib/frameworks/*`                     | ✅      |
+| Idea lifecycle             | `/ideas`, `/ideas/new`, `/ideas/[code]`, `lib/lifecycle/*` | ✅ |
+| Strategic Dashboard        | `/dashboard`, `lib/dashboard/queries.ts`              | ✅      |
+| Leaderboard + scoring      | `/leaderboard`, `lib/leaderboard/*`                   | ✅      |
+| Audit Explorer + hash chain | `/admin/audit`, `lib/audit/chain.ts`                 | ✅      |
+| Strict CSP + security headers | `middleware.ts`, `infra/nginx/nginx.conf`          | ✅      |
+| CI (typecheck/lint/build/audit/SBOM/Trivy) | `.github/workflows/ci.yml`            | ✅      |
+| Federated SSO (OIDC/SAML)  | `lib/auth/sso/*`                                      | 🟡 scaffold — Phase 1.5 |
+| MFA (TOTP)                 | `lib/auth/mfa.ts`                                     | 🟡 verify impl; enrollment Phase 1.5 |
+| Dev role switcher          | `/dev`, `BTKR_DEV_USER` env / `btkr_dev_user` cookie  | ✅ (dev only) |
+
+## 11. Risks and known gaps
 
 | Risk / Gap                                                          | Planned remediation                                  |
 | ------------------------------------------------------------------- | ---------------------------------------------------- |
 | Official DGA tokens not yet integrated — using approximate values   | Swap `@theme` block in `app/globals.css` on receipt  |
-| Federated SSO adapter not yet implemented                           | `lib/auth/sso/` slated for Phase 1.5                 |
-| MFA enforcement for admin / stakeholder not yet implemented          | Session middleware gate planned                      |
-| Audit-log hash chain (tamper detection) not yet implemented         | Phase 2; WORM export covers Phase 1                  |
-| Trivy + CycloneDX SBOM CI not yet wired                             | Wire in the GitHub Actions slice                     |
-| Dual-control approval for BYOK rotation not yet implemented         | Phase 2 admin UI                                     |
+| SSO adapters are scaffolded, not implemented — production can't run yet | Phase 1.5 fills `lib/auth/sso/{oidc,saml}.ts`     |
+| MFA enrollment (QR provisioning, recovery codes) not built          | Phase 1.5; `verifyTotp` primitive is ready           |
+| Audit chain doesn't yet defend against suffix truncation            | Phase 2 — publish chain checkpoints to a WORM bucket |
+| Dual-control approval for BYOK rotation not yet implemented          | Phase 2 admin UI                                     |
 | KSAA logo + official brand assets not loaded                        | Replace placeholders in `public/brand/` when delivered |
+| No automated a11y (axe) / visual regression in CI                   | Phase 2 — Playwright + axe-core                      |
+| Idea comments have a schema + scoring weight but no UI yet           | Phase 2 — comment thread on `/ideas/[code]`          |
 
 ---
 
-## 11. Contacts & ownership
+## 12. Contacts & ownership
 
 | Role                  | Where to look                          |
 | --------------------- | -------------------------------------- |
@@ -190,10 +217,10 @@ RPO 15 min · RTO 4 h.
 
 ---
 
-## 12. Where to start, by role
+## 13. Where to start, by role
 
-- **Incoming engineer**: read [`CLAUDE.md`](CLAUDE.md) → [`docs/STRUCTURE.md`](docs/STRUCTURE.md) → [`docs/togaf/`](docs/togaf/).
-- **Auditor**: read [`docs/security/nca-ecc-mapping.md`](docs/security/nca-ecc-mapping.md) → audit log schema → role matrix.
-- **On-call**: read [`docs/operations/runbook.md`](docs/operations/runbook.md).
-- **Stakeholder**: read this file (§1, §3) then the Vercel preview URL on the latest PR.
-- **CISO**: read this file (§4–7, §9) + the NCA ECC mapping document.
+- **Incoming engineer**: [`CLAUDE.md`](CLAUDE.md) → [`docs/STRUCTURE.md`](docs/STRUCTURE.md) → [`docs/togaf/`](docs/togaf/) → §10 feature map above. In dev, visit `/dev` to switch acting role.
+- **Auditor**: [`docs/security/nca-ecc-mapping.md`](docs/security/nca-ecc-mapping.md) → `db/schema/audit.ts` → `/admin/audit` (verify chain) → role matrix in §4.
+- **On-call**: [`docs/operations/runbook.md`](docs/operations/runbook.md).
+- **Stakeholder**: this file (§1, §3, §10) then the Vercel preview URL on the latest PR.
+- **CISO**: this file (§4–7, §9–11) + the NCA ECC mapping document + ADRs 0002 / 0003.
