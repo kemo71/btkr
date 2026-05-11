@@ -1,7 +1,16 @@
-# btkr
+# Btkr Valley — وادي بتكر
 
-A production-ready Next.js 15 Progressive Web App, deployed on Vercel,
-installable on iOS and Android home screens.
+An Arabic-first, DGA-compliant **Innovation Management Platform** for **King
+Salman Global Academy for Arabic Language (KSAA)**. Built as a Next.js 15 PWA,
+deployed on Vercel for stakeholder demos, with a containerized self-host path
+(Docker + Postgres + Redis) for production inside KSA data residency.
+
+> **Architecture docs.** See [`docs/togaf/`](./docs/togaf/) for the TOGAF
+> Architecture Definition Document and [`docs/STRUCTURE.md`](./docs/STRUCTURE.md)
+> for the canonical file layout. Compliance anchors:
+> [`docs/security/`](./docs/security/) (NCA ECC),
+> [`docs/compliance/`](./docs/compliance/) (DGA),
+> [`docs/operations/`](./docs/operations/) (ITIL 4).
 
 ## Stack
 
@@ -52,3 +61,17 @@ PR will get a preview URL automatically (look for the bot comment on the PR).
 `.claude/settings.json` defines a `SessionStart` hook that runs
 `pnpm install --frozen-lockfile && pnpm typecheck` so a fresh remote session
 opens with deps installed and TypeScript verified.
+
+## Project conventions (Btkr Valley)
+
+- **Arabic-first, RTL by default.** All UI defaults to `dir="rtl"` `lang="ar"`;
+  English is a toggle via i18n, never the canonical form.
+- **No standing AI keys server-side.** Anthropic / OpenAI keys are BYOK,
+  encrypted at rest in `lib/crypto/`, rotated quarterly.
+- **RBAC.** Admin / Stakeholder / Employee / Auditor. Permission checks
+  centralized in `lib/rbac/`; deny-by-default at the policy layer.
+- **Audit.** Every state transition writes to the append-only log in
+  `lib/audit/`. Don't bypass — even admin actions are logged.
+- **TSDoc on every public API.** Exports from `lib/*` and `components/*`
+  must carry TSDoc with an `@example` block.
+- **No new top-level dirs without updating `docs/STRUCTURE.md`.**
