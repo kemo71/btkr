@@ -15,7 +15,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.95.2",
@@ -38,7 +39,9 @@
     ]
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@eslint/eslintrc": "3.2.0",
+    "@playwright/test": "^1.60.0",
     "@serwist/next": "9.0.11",
     "@tailwindcss/postcss": "4.1.14",
     "@types/node": "22.10.5",
