@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.95.2",
+    "@node-saml/node-saml": "5.1.0",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.3",
     "next": "15.5.18",
