@@ -1,0 +1,33 @@
+{
+  "$comment": "Strategic dashboard translations.",
+  "page": {
+    "title": "Strategic Dashboard",
+    "subtitle": "End-to-end view of the innovation lifecycle, from idea to impact."
+  },
+  "kpis": {
+    "totalIdeas": "Total ideas",
+    "activeIdeas": "Active ideas",
+    "approvalRate": "Approval rate",
+    "totalUsers": "Users"
+  },
+  "funnel": {
+    "title": "Stage funnel",
+    "subtitle": "Idea distribution across the lifecycle"
+  },
+  "methodology": {
+    "title": "Methodology adoption",
+    "empty": "No methodologies adopted yet.",
+    "none": "No methodology"
+  },
+  "contributors": {
+    "title": "Top contributors",
+    "empty": "No contributors yet.",
+    "ideas": "{count, plural, =0 {no ideas} one {1 idea} other {# ideas}}"
+  },
+  "decisions": {
+    "title": "Recent gate decisions",
+    "empty": "No decisions yet.",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  }
+}

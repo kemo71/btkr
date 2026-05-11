@@ -15,7 +15,14 @@ import { routing, type Locale } from "./routing";
  *
  * @see https://next-intl.dev/docs/getting-started/app-router
  */
-const NAMESPACES = ["common", "frameworks", "byok", "ideas", "coach"] as const;
+const NAMESPACES = [
+  "common",
+  "frameworks",
+  "byok",
+  "ideas",
+  "coach",
+  "dashboard",
+] as const;
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
