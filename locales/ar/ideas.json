@@ -1,0 +1,63 @@
+{
+  "$comment": "ترجمات وحدة دورة حياة الأفكار.",
+  "page": {
+    "title": "الأفكار",
+    "subtitle": "{count, plural, =0 {لا توجد أفكار بعد} one {فكرة واحدة} two {فكرتان} few {{count} أفكار} other {{count} فكرة}}",
+    "newIdea": "+ فكرة جديدة"
+  },
+  "list": {
+    "title": "كل الأفكار",
+    "empty": "لم يتم تقديم أي فكرة بعد. ابدأ بإنشاء واحدة.",
+    "votes": "الأصوات"
+  },
+  "new": {
+    "title": "فكرة جديدة",
+    "subtitle": "صف فكرتك بإيجاز. ستبدأ في مرحلة \"مقدمة\" بعد الحفظ.",
+    "formTitle": "تفاصيل الفكرة",
+    "submit": "تقديم الفكرة"
+  },
+  "fields": {
+    "titleAr": "العنوان (بالعربية)",
+    "titleEn": "العنوان (بالإنجليزية)",
+    "summaryAr": "ملخّص",
+    "body": "النص الكامل",
+    "department": "الإدارة",
+    "innovationType": "نوع الابتكار",
+    "framework": "منهجية الابتكار",
+    "frameworkNone": "— لم يُختر —"
+  },
+  "innovationType": {
+    "incremental": "تدريجي",
+    "adjacent": "متاخم",
+    "disruptive": "جذري"
+  },
+  "framework": {
+    "triz": "تريز",
+    "sit": "SIT",
+    "jtbd": "JTBD",
+    "six-hats": "القبعات الست",
+    "design-thinking": "التفكير التصميمي"
+  },
+  "stages": {
+    "draft": "مسودة",
+    "submitted": "مقدمة",
+    "triage": "فرز",
+    "evaluation": "تقييم",
+    "development": "تطوير",
+    "pilot": "تجريب",
+    "scale": "توسعة",
+    "archived": "مؤرشفة",
+    "rejected": "مرفوضة"
+  },
+  "detail": {
+    "summary": "الملخّص والمحتوى",
+    "vote": "صوّت لهذه الفكرة",
+    "timeline": "الخط الزمني للحياة",
+    "gateTitle": "قرار البوابة المرحلية",
+    "gateSubtitle": "اختر المرحلة التالية واكتب مبرراً قابلاً للتدقيق.",
+    "nextStage": "المرحلة التالية",
+    "rationale": "المبرر (مطلوب)",
+    "approve": "اعتماد",
+    "reject": "رفض"
+  }
+}

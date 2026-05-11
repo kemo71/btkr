@@ -1,0 +1,63 @@
+{
+  "$comment": "Idea lifecycle translations.",
+  "page": {
+    "title": "Ideas",
+    "subtitle": "{count, plural, =0 {No ideas yet} one {1 idea} other {# ideas}}",
+    "newIdea": "+ New idea"
+  },
+  "list": {
+    "title": "All ideas",
+    "empty": "No ideas submitted yet. Start by creating one.",
+    "votes": "Votes"
+  },
+  "new": {
+    "title": "New idea",
+    "subtitle": "Describe your idea concisely. It will start in the Submitted stage.",
+    "formTitle": "Idea details",
+    "submit": "Submit idea"
+  },
+  "fields": {
+    "titleAr": "Title (Arabic)",
+    "titleEn": "Title (English)",
+    "summaryAr": "Summary",
+    "body": "Full description",
+    "department": "Department",
+    "innovationType": "Innovation type",
+    "framework": "Innovation framework",
+    "frameworkNone": "— not selected —"
+  },
+  "innovationType": {
+    "incremental": "Incremental",
+    "adjacent": "Adjacent",
+    "disruptive": "Disruptive"
+  },
+  "framework": {
+    "triz": "TRIZ",
+    "sit": "SIT",
+    "jtbd": "JTBD",
+    "six-hats": "Six Hats",
+    "design-thinking": "Design Thinking"
+  },
+  "stages": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "triage": "Triage",
+    "evaluation": "Evaluation",
+    "development": "Development",
+    "pilot": "Pilot",
+    "scale": "Scale",
+    "archived": "Archived",
+    "rejected": "Rejected"
+  },
+  "detail": {
+    "summary": "Summary & content",
+    "vote": "Vote for this idea",
+    "timeline": "Lifecycle timeline",
+    "gateTitle": "Stage gate decision",
+    "gateSubtitle": "Pick the next stage and write an auditable rationale.",
+    "nextStage": "Next stage",
+    "rationale": "Rationale (required)",
+    "approve": "Approve",
+    "reject": "Reject"
+  }
+}
