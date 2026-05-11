@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLACEHOLDER ONLY — square brand mark. Replace with the official KSAA mark.
+  See public/brand/README.md.
+-->
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="وادي بتكر mark (placeholder)">
+  <rect width="48" height="48" rx="11" fill="#006C35"/>
+  <text x="24" y="33" text-anchor="middle" font-family="'IBM Plex Sans Arabic','Segoe UI',system-ui,sans-serif" font-size="26" font-weight="700" fill="#ffffff">ب</text>
+</svg>

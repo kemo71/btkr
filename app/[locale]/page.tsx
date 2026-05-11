@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { AuthMenu } from "@/components/ui/auth-menu";
+import { BrandMark } from "@/components/ui/brand-mark";
 import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
 import { tryGetCurrentActor } from "@/lib/auth/current-actor";
 import { can } from "@/lib/rbac";
@@ -49,14 +50,16 @@ export default async function HomePage({
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-6 py-12">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <Badge tone="success" dot>
-          {t("badge")}
-        </Badge>
+        <BrandMark variant="lockup" />
         <div className="flex items-center gap-3">
           <LocaleSwitcher />
           <AuthMenu signInLabel={ta("signIn")} signOutLabel={ta("signOut")} />
         </div>
       </header>
+
+      <Badge tone="success" dot>
+        {t("badge")}
+      </Badge>
 
       <nav className="flex flex-wrap gap-2">
         {navLinks.map((l) => (

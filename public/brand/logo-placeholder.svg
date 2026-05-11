@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLACEHOLDER ONLY — replace with the official King Salman Global Academy
+  for Arabic Language (KSAA) logo lockup. See public/brand/README.md.
+  Colors use the DGA-approximate primary green (~#006C35) from app/dga-tokens.css.
+-->
+<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="وادي بتكر — Btkr Valley (placeholder logo)">
+  <rect x="0" y="4" width="40" height="40" rx="9" fill="#006C35"/>
+  <text x="20" y="32" text-anchor="middle" font-family="'IBM Plex Sans Arabic','Segoe UI',system-ui,sans-serif" font-size="22" font-weight="700" fill="#ffffff">ب</text>
+  <text x="52" y="22" font-family="'IBM Plex Sans Arabic','Segoe UI',system-ui,sans-serif" font-size="18" font-weight="700" fill="#1a1a1a">وادي بتكر</text>
+  <text x="52" y="39" font-family="'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="500" fill="#5a5a5a" letter-spacing="0.5">BTKR VALLEY · placeholder</text>
+</svg>
