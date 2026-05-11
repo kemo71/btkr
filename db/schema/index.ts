@@ -17,3 +17,4 @@ export * from "./lifecycle";
 export * from "./accreditations";
 export * from "./audit";
 export * from "./byok";
+export * from "./mfa";

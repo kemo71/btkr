@@ -88,7 +88,10 @@ export default function middleware(req: NextRequest): NextResponse {
 }
 
 export const config = {
+  // Exclude the SSO route *handlers* (login/callback/logout/saml) — those are
+  // locale-agnostic API-style endpoints. `/auth/mfa` IS a page under
+  // `app/[locale]/...`, so it must pass through next-intl to get a locale.
   matcher: [
-    "/((?!api|auth|_next|_vercel|sw\\.js|manifest\\.webmanifest|icon|apple-icon|icons|.*\\..*).*)",
+    "/((?!api|auth/login|auth/callback|auth/logout|auth/saml|_next|_vercel|sw\\.js|manifest\\.webmanifest|icon|apple-icon|icons|.*\\..*).*)",
   ],
 };

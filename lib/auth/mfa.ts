@@ -1,33 +1,68 @@
 import "server-only";
-import { createHmac } from "node:crypto";
+import { createHmac, randomBytes, randomInt } from "node:crypto";
 
 /**
- * MFA — TOTP (RFC 6238) verification.
+ * MFA — TOTP (RFC 6238) verification, secret + recovery-code generation.
  *
  * Used as a *secondary* factor when the IdP does not assert that MFA was
  * already satisfied (`SsoIdentity.mfaSatisfied === false`) for a role that
- * requires it (admin, stakeholder). Enrollment (QR provisioning, recovery
- * codes) is Phase 1.5; the verification primitive is implemented here so
- * the session middleware can call it as soon as enrollment lands.
+ * requires it (admin, stakeholder). Enrollment state lives in
+ * `db/schema/mfa.ts`; secrets are stored encrypted with the same AES-GCM
+ * helper as BYOK keys (`lib/crypto/aes-gcm.ts`).
  *
- * Secrets are stored encrypted at rest using the same AES-GCM helper as
- * BYOK keys (`lib/crypto/aes-gcm.ts`).
- *
+ * @see lib/auth/mfa-store.ts (DB layer)
  * @see docs/security/nca-ecc-mapping.md §2-2-2 (MFA for privileged roles)
  */
 
 const STEP_SECONDS = 30;
 const DIGITS = 6;
+const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+/** Generate a fresh base32 TOTP secret (default 20 bytes → 32 base32 chars). */
+export function generateTotpSecret(bytes = 20): string {
+  const buf = randomBytes(bytes);
+  let bits = 0;
+  let value = 0;
+  let out = "";
+  for (const byte of buf) {
+    value = (value << 8) | byte;
+    bits += 8;
+    while (bits >= 5) {
+      out += BASE32_ALPHABET[(value >>> (bits - 5)) & 31];
+      bits -= 5;
+    }
+  }
+  if (bits > 0) out += BASE32_ALPHABET[(value << (5 - bits)) & 31];
+  return out;
+}
+
+/**
+ * Generate `count` single-use recovery codes (human-friendly, 10 chars,
+ * lowercase + digits, grouped 5-5). Return the plaintext codes; callers
+ * store only their SHA-256 hashes.
+ *
+ * @example
+ * const codes = generateRecoveryCodes(); // ["a1b2c-d3e4f", ...]
+ */
+export function generateRecoveryCodes(count = 10): string[] {
+  const charset = "abcdefghijkmnpqrstuvwxyz23456789"; // no l/o/0/1 ambiguity
+  const codes: string[] = [];
+  for (let i = 0; i < count; i++) {
+    let raw = "";
+    for (let j = 0; j < 10; j++) raw += charset[randomInt(charset.length)];
+    codes.push(`${raw.slice(0, 5)}-${raw.slice(5)}`);
+  }
+  return codes;
+}
 
 /** RFC 4648 base32 decode (no padding handling needed for TOTP secrets). */
 function base32Decode(input: string): Buffer {
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   const clean = input.replace(/=+$/g, "").toUpperCase();
   let bits = 0;
   let value = 0;
   const out: number[] = [];
   for (const ch of clean) {
-    const idx = alphabet.indexOf(ch);
+    const idx = BASE32_ALPHABET.indexOf(ch);
     if (idx === -1) throw new Error("Invalid base32 character in TOTP secret.");
     value = (value << 5) | idx;
     bits += 5;
