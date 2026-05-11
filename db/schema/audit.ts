@@ -57,6 +57,17 @@ export const auditLog = pgTable(
     occurredAt: timestamp("occurred_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
+    /**
+     * Hex SHA-256 of the previous row's `entry_hash`, or 64 zeros for the
+     * very first row. Forms an append-only Merkle-style chain so any
+     * insert / update / delete in the middle is detectable on verify.
+     */
+    prevHash: text("prev_hash").notNull().default("0".repeat(64)),
+    /**
+     * Hex SHA-256 of the canonicalized row payload concatenated with
+     * `prev_hash`. Computed by `lib/audit/chain.ts` at insert time.
+     */
+    entryHash: text("entry_hash").notNull().default("0".repeat(64)),
   },
   (t) => [
     index("audit_actor_idx").on(t.actorId),

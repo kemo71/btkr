@@ -23,6 +23,7 @@ const NAMESPACES = [
   "coach",
   "dashboard",
   "leaderboard",
+  "audit",
 ] as const;
 
 export default getRequestConfig(async ({ requestLocale }) => {

@@ -1,0 +1,52 @@
+{
+  "$comment": "Audit explorer translations.",
+  "page": {
+    "title": "Audit Explorer",
+    "subtitle": "Append-only log of every sensitive action, with hash-chain integrity verification."
+  },
+  "chain": {
+    "title": "Chain integrity",
+    "subtitle": "Verify all entries form an unbroken hash chain with no tampering.",
+    "run": "Verify now",
+    "running": "Verifying…",
+    "ok": "Intact",
+    "broken": "Broken at"
+  },
+  "filter": {
+    "title": "Filter",
+    "category": "Category",
+    "from": "From date",
+    "to": "To date",
+    "apply": "Apply",
+    "allCategories": "All categories"
+  },
+  "rows": {
+    "title": "Entries",
+    "subtitle": "{count} entries · page {page} of {pages}",
+    "empty": "No entries match the filter.",
+    "when": "When",
+    "category": "Category",
+    "action": "Action",
+    "actor": "Role",
+    "target": "Target",
+    "outcome": "Outcome"
+  },
+  "categories": {
+    "auth": "auth",
+    "rbac": "rbac",
+    "byok": "byok",
+    "lifecycle": "lifecycle",
+    "config": "config",
+    "export": "export"
+  },
+  "outcomes": {
+    "success": "success",
+    "failure": "failure",
+    "denied": "denied"
+  },
+  "pager": {
+    "prev": "Previous",
+    "next": "Next",
+    "position": "{page} / {pages}"
+  }
+}
