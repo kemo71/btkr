@@ -54,7 +54,7 @@ The authenticated app (ideas, dashboard, leaderboard, coach, admin) needs:
 
 | Env var | For |
 |---|---|
-| `DATABASE_URL` | Postgres (Vercel Postgres / Neon — KSA region in production) |
+| `DATABASE_URL` | Postgres. The Vercel/Neon integration may instead set `POSTGRES_URL` / `DATABASE_URL_UNPOOLED` — the app accepts those too; no extra config needed. Use the **pooled** string for the app. (KSA region in production — AP2.) |
 | `AUTH_STATE_SECRET` | signing the SSO login-state cookie (`openssl rand -base64 32`) |
 | `OIDC_ISSUER` / `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET` *(or `SAML_*`)* | the IdP |
 | `APP_ORIGIN` | your deployment's public origin (for redirect/ACS URLs) |
