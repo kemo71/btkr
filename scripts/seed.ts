@@ -1,20 +1,24 @@
 /**
- * Seed roles, permissions, role↔permission grants, and a development user
- * set so the BYOK / lifecycle UIs are immediately usable in local dev.
+ * Seed roles, permissions, role↔permission grants, a development/demo user
+ * set, and a small sample dataset (ideas / votes / comments / lifecycle
+ * events / accreditations) so the dashboard and leaderboard aren't empty.
  *
  * Usage:
- *   pnpm db:seed
+ *   pnpm db:seed          # (runs with --conditions=react-server so the
+ *                         #  "server-only" guard is a no-op in the script)
  *
- * Idempotent — every insert uses `ON CONFLICT DO NOTHING`.
+ * Idempotent — re-running is safe (`ON CONFLICT DO NOTHING`, plus the demo
+ * data checks for `IDEA-0001` before inserting).
  *
- * **Production:** the dev users created here are dev-only and should never
- * exist in a production database. The seeder skips them when
- * `NODE_ENV === "production"` unless `BTKR_SEED_FORCE=1` is set.
+ * **Production:** the seeded users are skipped when `NODE_ENV=production`
+ * unless `BTKR_SEED_FORCE=1` *or* `BTKR_DEMO_MODE=1` is set; the sample
+ * data self-gates on those users existing.
  */
 import "dotenv/config";
 import { eq, and } from "drizzle-orm";
 import { db, schema } from "@/lib/db/client";
 import { seedRolesAndPermissions } from "@/db/seed/roles";
+import { seedDemoData } from "@/db/seed/demo-data";
 
 interface DevUserSeed {
   email: string;
@@ -100,5 +104,8 @@ async function seedDevUsers(): Promise<void> {
 
 await seedRolesAndPermissions();
 await seedDevUsers();
+// Sample ideas / votes / comments / accreditations so the demo's dashboard
+// and leaderboard aren't empty. Self-gates if the seeded users aren't there.
+await seedDemoData();
 console.log("seed complete");
 process.exit(0);

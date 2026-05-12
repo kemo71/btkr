@@ -75,13 +75,15 @@ BYOK_KEK=...                # openssl rand -base64 32
 BTKR_DEMO_MODE=1            # enables /auth/demo
 ```
 
-then run `pnpm db:migrate && pnpm db:seed` once (the seed creates the demo
-users because `BTKR_DEMO_MODE=1`). The header now shows **"Try the demo"** →
-`/auth/demo`, a role picker (Admin / Stakeholder / Employee / Auditor). Each
-choice creates a **real session** bound to a real seeded user with a real
-role — RBAC, the audit log (incl. an `auth.demo.login` entry), and the
-strict CSP all still apply. A loud **"DEMO MODE"** banner shows on every
-page so it can't be mistaken for production.
+then run `pnpm db:migrate && pnpm db:seed` once. With `BTKR_DEMO_MODE=1` the
+seed creates the demo users **and a small sample dataset** (≈7 ideas across
+stages with votes, comments, gate decisions, and a few accreditations) so
+the dashboard and leaderboard aren't empty. The header now shows **"Try the
+demo"** → `/auth/demo`, a role picker (Admin / Stakeholder / Employee /
+Auditor). Each choice creates a **real session** bound to a real seeded user
+with a real role — RBAC, the audit log (incl. an `auth.demo.login` entry),
+and the strict CSP all still apply. A loud **"DEMO MODE"** banner shows on
+every page so it can't be mistaken for production.
 
 Demo mode is **off unless `BTKR_DEMO_MODE=1`** is explicitly set; with it
 unset a production deploy stays locked to the IdP. The seeded data on a
