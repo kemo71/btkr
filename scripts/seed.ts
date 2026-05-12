@@ -15,7 +15,7 @@
  * data self-gates on those users existing.
  */
 import "dotenv/config";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db/client";
 import { seedRolesAndPermissions } from "@/db/seed/roles";
 import { seedDemoData } from "@/db/seed/demo-data";
@@ -102,10 +102,20 @@ async function seedDevUsers(): Promise<void> {
   }
 }
 
-await seedRolesAndPermissions();
-await seedDevUsers();
-// Sample ideas / votes / comments / accreditations so the demo's dashboard
-// and leaderboard aren't empty. Self-gates if the seeded users aren't there.
-await seedDemoData();
-console.log("seed complete");
-process.exit(0);
+// Wrapped in a function (not top-level await): tsx compiles this as CJS
+// when package.json has no "type": "module", and CJS forbids top-level await.
+async function main(): Promise<void> {
+  await seedRolesAndPermissions();
+  await seedDevUsers();
+  // Sample ideas / votes / comments / accreditations so the demo's dashboard
+  // and leaderboard aren't empty. Self-gates if the seeded users aren't there.
+  await seedDemoData();
+  console.log("seed complete");
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

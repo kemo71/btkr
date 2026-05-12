@@ -19,17 +19,26 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import { resolveDirectDatabaseUrl } from "@/lib/db/connection";
 
-const url = resolveDirectDatabaseUrl();
-if (!url) {
-  console.error(
-    "No database URL. Set DATABASE_URL (or POSTGRES_URL) — e.g. `vercel env pull .env.local`.",
-  );
-  process.exit(1);
+// Wrapped in a function (not top-level await): tsx compiles this as CJS
+// when package.json has no "type": "module", and CJS forbids top-level await.
+async function main(): Promise<void> {
+  const url = resolveDirectDatabaseUrl();
+  if (!url) {
+    console.error(
+      "No database URL. Set DATABASE_URL (or POSTGRES_URL) — e.g. `vercel env pull .env.local`.",
+    );
+    process.exit(1);
+  }
+
+  const client = postgres(url, { max: 1, prepare: false });
+  const db = drizzle(client);
+
+  await migrate(db, { migrationsFolder: "./db/migrations" });
+  await client.end();
+  console.log("migrations applied");
 }
 
-const client = postgres(url, { max: 1, prepare: false });
-const db = drizzle(client);
-
-await migrate(db, { migrationsFolder: "./db/migrations" });
-await client.end();
-console.log("migrations applied");
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
