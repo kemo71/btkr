@@ -83,28 +83,34 @@ export default async function HomePage({
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader title={t("cards.lifecycle.title")} subtitle="V1" />
-          <CardBody>
-            <p className="text-sm text-neutral-600">
-              {t("cards.lifecycle.body")}
-            </p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardHeader title={t("cards.coach.title")} subtitle="AI · BYOK" />
-          <CardBody>
-            <p className="text-sm text-neutral-600">{t("cards.coach.body")}</p>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardHeader title={t("cards.frameworks.title")} subtitle="V2" />
-          <CardBody>
-            <p className="text-sm text-neutral-600">
-              {t("cards.frameworks.body")}
-            </p>
-          </CardBody>
-        </Card>
+        <a href={p("/ideas")} className="block focus-visible:outline-none">
+          <Card className="h-full">
+            <CardHeader title={t("cards.lifecycle.title")} subtitle="V1" />
+            <CardBody>
+              <p className="text-sm text-neutral-600">
+                {t("cards.lifecycle.body")}
+              </p>
+            </CardBody>
+          </Card>
+        </a>
+        <a href={p("/coach")} className="block focus-visible:outline-none">
+          <Card className="h-full">
+            <CardHeader title={t("cards.coach.title")} subtitle="AI · BYOK" />
+            <CardBody>
+              <p className="text-sm text-neutral-600">{t("cards.coach.body")}</p>
+            </CardBody>
+          </Card>
+        </a>
+        <a href={p("/frameworks")} className="block focus-visible:outline-none">
+          <Card className="h-full">
+            <CardHeader title={t("cards.frameworks.title")} subtitle="V2" />
+            <CardBody>
+              <p className="text-sm text-neutral-600">
+                {t("cards.frameworks.body")}
+              </p>
+            </CardBody>
+          </Card>
+        </a>
       </section>
     </main>
   );
