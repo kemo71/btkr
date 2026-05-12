@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { AuthMenu } from "@/components/ui/auth-menu";
 import { BrandMark } from "@/components/ui/brand-mark";
-import { Badge, Card, CardBody, CardHeader } from "@/components/dga";
+import { Card, CardBody, CardHeader } from "@/components/dga";
 import { tryGetCurrentActor } from "@/lib/auth/current-actor";
 import { can } from "@/lib/rbac";
 import type { Locale } from "@/i18n/routing";
@@ -61,10 +61,6 @@ export default async function HomePage({
         </div>
       </header>
 
-      <Badge tone="success" dot>
-        {t("badge")}
-      </Badge>
-
       <nav className="flex flex-wrap gap-2">
         {navLinks.map((l) => (
           <a
@@ -84,24 +80,6 @@ export default async function HomePage({
         <p className="max-w-prose text-lg text-neutral-600">
           {t("description")}
         </p>
-        <div className="flex flex-wrap gap-3 pt-2">
-          <a
-            href="https://github.com/kemo71/btkr/tree/main/docs/togaf"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-12 items-center justify-center rounded-lg bg-primary-600 px-5 text-lg font-medium text-white shadow-sm transition-colors duration-[var(--duration-base)] hover:bg-primary-700"
-          >
-            {t("ctaArchitecture")}
-          </a>
-          <a
-            href="https://web.dev/progressive-web-apps/"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-12 items-center justify-center rounded-lg border border-primary-600 px-5 text-lg font-medium text-primary-700 transition-colors duration-[var(--duration-base)] hover:bg-primary-50"
-          >
-            {t("ctaPwa")}
-          </a>
-        </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">

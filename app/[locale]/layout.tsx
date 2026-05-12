@@ -43,10 +43,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-  ],
+  // Light-only platform — no dark theme.
+  themeColor: "#ffffff",
+  colorScheme: "light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -85,7 +84,7 @@ export default async function LocaleLayout({
       className={`${plexArabic.variable} ${plexLatin.variable}`}
     >
       <body
-        className={`${fontClass} min-h-dvh bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100`}
+        className={`${fontClass} min-h-dvh bg-white text-neutral-900 antialiased`}
       >
         <DemoBanner />
         <NextIntlClientProvider messages={messages} locale={locale}>

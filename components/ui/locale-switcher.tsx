@@ -39,7 +39,7 @@ export function LocaleSwitcher() {
       aria-label={t("switchTo")}
       lang={next}
       dir={next === "ar" ? "rtl" : "ltr"}
-      className="inline-flex items-center gap-1.5 rounded-md border border-neutral-200 px-2.5 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-900"
+      className="inline-flex items-center gap-1.5 rounded-md border border-neutral-200 px-2.5 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50"
     >
       <span aria-hidden>{next === "ar" ? "ع" : "EN"}</span>
       <span>{t(next)}</span>

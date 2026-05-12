@@ -15,11 +15,8 @@
     "demo": "Try the demo"
   },
   "home": {
-    "badge": "PWA · Installable on iOS & Android",
     "title": "Btkr Valley",
     "description": "An Arabic-first innovation management platform aligned to the DGA Design System and NCA Essential Cybersecurity Controls — turning employee ideas into measurable institutional impact.",
-    "ctaArchitecture": "Architecture docs (TOGAF)",
-    "ctaPwa": "About PWAs",
     "cards": {
       "lifecycle": {
         "title": "Idea lifecycle",
