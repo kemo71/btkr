@@ -6,6 +6,7 @@ import {
   sealLoginState,
   LOGIN_STATE_COOKIE,
 } from "@/lib/auth/sso/provider";
+import { isDemoMode } from "@/lib/auth/demo";
 import { audit } from "@/lib/audit/writer";
 
 export const runtime = "nodejs";
@@ -16,14 +17,17 @@ export const dynamic = "force-dynamic";
  *
  * - OIDC: builds the authorization URL (PKCE), stashes the login state in a
  *   signed, 10-minute, HTTP-only cookie, and 302s to the IdP.
- * - SAML: delegates to the adapter's `buildLoginUrl` (slice 17).
- * - No SSO configured: in dev, 302 to `/dev` (the role switcher); in
- *   production, return 503 — the deployment must configure an IdP.
+ * - SAML: delegates to the adapter's `buildLoginUrl`.
+ * - No SSO configured:
+ *     - if `BTKR_DEMO_MODE=1` → 302 to `/auth/demo` (role picker);
+ *     - else in dev → 302 to `/dev` (the role switcher);
+ *     - else in production → 503 (the deployment must configure an IdP).
  *
  * `?returnTo=/path` controls where the user lands after login (defaults to
  * the locale root `/`). Only same-origin relative paths are honored.
  *
  * @see lib/auth/sso/provider.ts
+ * @see lib/auth/demo.ts
  * @see app/auth/callback/route.ts
  */
 export async function GET(req: NextRequest): Promise<Response> {
@@ -35,6 +39,9 @@ export async function GET(req: NextRequest): Promise<Response> {
     : "/";
 
   if (!adapter) {
+    if (isDemoMode()) {
+      return NextResponse.redirect(new URL("/auth/demo", req.nextUrl.origin));
+    }
     if (process.env.NODE_ENV !== "production") {
       return NextResponse.redirect(new URL("/dev", req.nextUrl.origin));
     }

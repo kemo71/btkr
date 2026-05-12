@@ -162,6 +162,61 @@ export async function createSessionForIdentity(
   return { userId, roleSlugs, mfaPending };
 }
 
+/**
+ * Create a session for a *seeded* user by email — the demo-mode sign-in path.
+ *
+ * No SSO, no MFA prompt (demo skips it: `mfa_pending = false`). The session
+ * is otherwise identical to a real one — same cookie, same TTL rules, same
+ * RBAC downstream. Only reachable when `BTKR_DEMO_MODE=1` (the caller checks
+ * `isDemoMode()`; this function is a thin DB helper).
+ *
+ * @returns the user id + roles, or null if the seeded user doesn't exist.
+ * @see lib/auth/demo.ts
+ * @see app/[locale]/auth/demo/actions.ts
+ */
+export async function createDemoSession(
+  email: string,
+  meta: { ipAddress?: string | null; userAgent?: string | null },
+): Promise<{ userId: string; roleSlugs: string[] } | null> {
+  const [user] = await db
+    .select({ id: schema.users.id, isActive: schema.users.isActive })
+    .from(schema.users)
+    .where(eq(schema.users.email, email))
+    .limit(1);
+  if (!user || !user.isActive) return null;
+
+  const roleRows = await db
+    .select({ slug: schema.roles.slug })
+    .from(schema.userRoles)
+    .innerJoin(schema.roles, eq(schema.roles.id, schema.userRoles.roleId))
+    .where(eq(schema.userRoles.userId, user.id));
+  const roleSlugs = roleRows.map((r) => r.slug);
+
+  const token = randomBytes(32).toString("base64url");
+  const ttl = rolesRequireMfa(roleSlugs) ? TTL_PRIVILEGED : TTL_DEFAULT;
+  const expiresAt = new Date(Date.now() + ttl * 1000);
+
+  await db.insert(schema.sessions).values({
+    userId: user.id,
+    tokenHash: hashToken(token),
+    userAgent: meta.userAgent ?? null,
+    ipAddress: meta.ipAddress ?? null,
+    expiresAt,
+    mfaPending: false,
+  });
+
+  const jar = await cookies();
+  jar.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: ttl,
+  });
+
+  return { userId: user.id, roleSlugs };
+}
+
 /** Flip the current session's `mfa_pending` to false (after TOTP verify). */
 export async function completeMfaForCurrentSession(): Promise<boolean> {
   const jar = await cookies();

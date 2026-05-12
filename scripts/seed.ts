@@ -56,11 +56,14 @@ const DEV_USERS: readonly DevUserSeed[] = [
 ];
 
 async function seedDevUsers(): Promise<void> {
-  if (
-    process.env.NODE_ENV === "production" &&
-    process.env.BTKR_SEED_FORCE !== "1"
-  ) {
-    console.log("skipping dev users (NODE_ENV=production)");
+  // Skip the demo/dev users in production unless explicitly forced — but
+  // demo mode (`BTKR_DEMO_MODE=1`) needs them, since `/auth/demo` signs in
+  // as these seeded accounts.
+  const isProd = process.env.NODE_ENV === "production";
+  const forced = process.env.BTKR_SEED_FORCE === "1";
+  const demoMode = process.env.BTKR_DEMO_MODE === "1";
+  if (isProd && !forced && !demoMode) {
+    console.log("skipping demo/dev users (NODE_ENV=production, BTKR_DEMO_MODE unset)");
     return;
   }
 

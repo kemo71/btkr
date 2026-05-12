@@ -4,6 +4,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { IBM_Plex_Sans_Arabic, IBM_Plex_Sans } from "next/font/google";
 import { routing, direction, type Locale } from "@/i18n/routing";
+import { DemoBanner } from "@/components/ui/demo-banner";
 import "../globals.css";
 
 /**
@@ -86,6 +87,7 @@ export default async function LocaleLayout({
       <body
         className={`${fontClass} min-h-dvh bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100`}
       >
+        <DemoBanner />
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
         </NextIntlClientProvider>

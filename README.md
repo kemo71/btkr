@@ -64,6 +64,31 @@ The authenticated app (ideas, dashboard, leaderboard, coach, admin) needs:
 See [`.env.example`](./.env.example) for the full list. After setting
 `DATABASE_URL`, run `pnpm db:migrate && pnpm db:seed` once.
 
+### Demo mode (production-safe — no IdP needed)
+
+To demo the **whole authenticated app** on a production deployment without
+wiring an IdP, set:
+
+```
+DATABASE_URL=...            # a Postgres (Vercel Postgres / Neon)
+BYOK_KEK=...                # openssl rand -base64 32
+BTKR_DEMO_MODE=1            # enables /auth/demo
+```
+
+then run `pnpm db:migrate && pnpm db:seed` once (the seed creates the demo
+users because `BTKR_DEMO_MODE=1`). The header now shows **"Try the demo"** →
+`/auth/demo`, a role picker (Admin / Stakeholder / Employee / Auditor). Each
+choice creates a **real session** bound to a real seeded user with a real
+role — RBAC, the audit log (incl. an `auth.demo.login` entry), and the
+strict CSP all still apply. A loud **"DEMO MODE"** banner shows on every
+page so it can't be mistaken for production.
+
+Demo mode is **off unless `BTKR_DEMO_MODE=1`** is explicitly set; with it
+unset a production deploy stays locked to the IdP. The seeded data on a
+public demo is, by design, public and may be modified/reset — only enable
+it where that's acceptable. (The dev-only `BTKR_DEV_USER` shim remains
+hard-disabled in production.)
+
 ### Placeholders to swap before launch
 
 - **Brand:** `public/brand/*` + the PWA icon routes are placeholders —

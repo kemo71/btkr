@@ -53,7 +53,11 @@ export default async function HomePage({
         <BrandMark variant="lockup" />
         <div className="flex items-center gap-3">
           <LocaleSwitcher />
-          <AuthMenu signInLabel={ta("signIn")} signOutLabel={ta("signOut")} />
+          <AuthMenu
+            signInLabel={ta("signIn")}
+            signOutLabel={ta("signOut")}
+            demoLabel={ta("demo")}
+          />
         </div>
       </header>
 
